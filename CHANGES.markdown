@@ -1,3 +1,9 @@
+Version 0.3, 25.10.08
+- added backgroundjob runner
+- added automatic detection of starling, spawn and backgroundjob to set default runner
+- made logging of exceptions more consistent across runners. 
+- added better documentation in README and RDOC
+
 Version 0.2.5, 02.09.08
 - added automatic setting of spawn runner if the spawn plugin is installed. 
 

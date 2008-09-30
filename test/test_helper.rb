@@ -6,7 +6,7 @@ require 'rubygems'
 require 'active_support'
 require 'test/spec'
 require 'mocha'
-gem 'memcache-client'
+gem 'fiveruns-memcache-client'
 require 'memcache'
 
 $:.unshift plugin_lib, plugin_test

@@ -5,8 +5,8 @@ module Workling
     module Runners
       class NotRemoteRunner < Workling::Remote::Runners::Base
         def run(clazz, method, options = {})
-          workling = worker_instance(clazz, method)
-          workling.send(method, Marshal.load(Marshal.dump(options)))
+          options = Marshal.load(Marshal.dump(options)) # get this to behave more like the remote runners
+          dispatch!(clazz, method, options) 
           
           return nil # nada. niente.
         end

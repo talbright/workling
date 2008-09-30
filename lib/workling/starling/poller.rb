@@ -107,13 +107,11 @@ module Workling
               handler = @routing[queue]
               method_name = @routing.method_name(queue)
               logger.debug("Calling #{handler.class.to_s}\##{method_name}(#{result.inspect})")
-              handler.send(method_name, result)
+              handler.dispatch_to_worker_method(method_name, result)
             end
           rescue MemCache::MemCacheError => e
             logger.error("FAILED to connect with queue #{ queue }: #{ e } }")
             raise e
-          rescue Object => e
-            logger.error("FAILED to process queue #{ queue }. #{ @routing[queue] } could not handle invocation of #{ @routing.method_name(queue) } with #{ result.inspect }: #{ e }.\n#{ e.backtrace.join("\n") }")
           end
         end
         

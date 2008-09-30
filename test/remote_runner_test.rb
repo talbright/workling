@@ -10,7 +10,7 @@ context "the remote runner" do
     clazz, method, options = :util, :echo, { :message => "somebody_came@along.com" }
     old_dispatcher = Workling::Remote.dispatcher
     dispatcher = mock
-    dispatcher.expects(:run_with_error_handling).with(clazz, method, options)
+    dispatcher.expects(:run).with(clazz, method, options)
     Workling::Remote.dispatcher = dispatcher
     Workling::Remote.run(clazz, method, options)
     Workling::Remote.dispatcher = old_dispatcher # set back to whence we came

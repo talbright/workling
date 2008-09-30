@@ -2,9 +2,9 @@ require 'pp'
 
 puts '=> Loading Rails...'
 
-require File.dirname(__FILE__) + '/../../../../config/environment'
-require File.dirname(__FILE__) + '/../lib/workling/starling/poller'
-require File.dirname(__FILE__) + '/../lib/workling/starling/routing/class_and_method_routing'
+require File.dirname(__FILE__) + '/../config/environment'
+require File.dirname(__FILE__) + '/../vendor/plugins/workling/lib/workling/starling/poller'
+require File.dirname(__FILE__) + '/../vendor/plugins/workling/lib/workling/starling/routing/class_and_method_routing'
 
 puts '** Rails loaded.'
 
