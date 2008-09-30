@@ -161,7 +161,7 @@ Here is an example workling that crawls an addressbook and puts results in a ret
     class NetworkWorker < Workling::Base
       def search(options)
         results = Blackbook.get(options[:key], options[:username], options[:password])
-        Workling::Return.set(options[:uid], results)
+        Workling::Return::Store.set(options[:uid], results)
       end
     end
 
@@ -171,7 +171,7 @@ call your workling as above:
 
 you can now use the @uid to query the return store:   
 
-    results = Workling::Return.get(@uid)
+    results = Workling::Return::Store.get(@uid)
 
 of course, you can use this for progress indicators. just put the progress into the return store. 
 
