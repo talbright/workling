@@ -6,7 +6,7 @@ require 'rubygems'
 require 'active_support'
 require 'test/spec'
 require 'mocha'
-
+begin; require 'redgreen'; rescue; end
 
 $:.unshift plugin_lib, plugin_test
 
