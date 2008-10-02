@@ -7,7 +7,6 @@ require 'active_support'
 require 'test/spec'
 require 'mocha'
 
-Workling.try_load_a_memcache_client
 
 $:.unshift plugin_lib, plugin_test
 
@@ -16,6 +15,8 @@ RAILS_ENV = "test"
 require "mocks/spawn"
 require "mocks/logger"
 require "workling"
+Workling.try_load_a_memcache_client
+
 require "workling/discovery"
 require "workling/starling/routing/class_and_method_routing"
 require "workling/starling/poller"
