@@ -1,7 +1,12 @@
 module Workling
   class WorklingError < StandardError; end
   class WorklingNotFoundError < WorklingError; end
-
+  class StarlingNotFoundError < WorklingError
+    def initialize
+      super "config/starling.yml configured to connect to starling on #{ Workling::Starling.config[:listens_on] } for this environment. could not connect to starling on this host:port. pass starling the port with -p flag when starting it. If you don't want to use Starling at all, then explicitly set Workling::Remote.dispatcher (see README for an example)"
+    end
+  end
+  
   mattr_accessor :load_path
   @@load_path = File.expand_path(File.join(File.dirname(__FILE__), '../../../../app/workers')) 
   
@@ -14,7 +19,9 @@ module Workling
   #   Workling::Remote.dispatcher = Workling::Remote::Runners::StarlingRunner.new
   #
   def self.default_runner
-    if starling_installed?
+    if RAILS_ENV == "test"
+      Workling::Remote::Runners::NotRemoteRunner.new
+    elsif starling_installed?
       Workling::Remote::Runners::StarlingRunner.new
     elsif spawn_installed?
       Workling::Remote::Runners::SpawnRunner.new
@@ -38,6 +45,11 @@ module Workling
     raise_not_found(clazz, method) if method && !inst.respond_to?(method)
     inst
   end
+  
+  # returns Workling::Return::Store.instance. 
+  def self.return
+    Workling::Return::Store.instance
+  end
 
   # is spawn installed?
   def self.spawn_installed?
@@ -46,7 +58,10 @@ module Workling
 
   # is starling installed?  
   def self.starling_installed?
-    require 'starling' rescue nil
+    begin
+      require 'starling' 
+    rescue LoadError
+    end
       
     Object.const_defined? "Starling"
   end
@@ -54,6 +69,22 @@ module Workling
   # is bj installed?
   def self.bj_installed?
     Object.const_defined? "Bj"
+  end
+  
+  # tries to load fiveruns-memcache-client. if this isn't found, 
+  # memcache-client is searched for. if that isn't found, don't do anything. 
+  def self.try_load_a_memcache_client
+    begin
+      gem 'fiveruns-memcache-client'
+      require 'memcache'
+    rescue Gem::LoadError
+      begin
+        gem 'memcache-client'
+        require 'memcache'
+      rescue Gem::LoadError
+        Workling::Base.logger.info "WORKLING: couldn't find a memcache client - you need one for the starling runner. "
+      end
+    end
   end
   
   private

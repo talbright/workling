@@ -13,7 +13,9 @@ trap(:INT) { exit }
 begin
   client = Workling::Starling::Client.new
   client.reset
-
+  
+  client.stats # do this so that connection is shown as established below. 
+  
   puts "Queue state:"
   pp client.inspect
   pp "Active?: #{client.active?}"

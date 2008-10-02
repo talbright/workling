@@ -8,7 +8,7 @@ You can configure how the background code will be run. Currently, workling suppo
 
 The easiest way of getting started with workling is like this: 
 
-    script/plugin install git@github.com:purzelrakete/workling.git
+    script/plugin install git://github.com/purzelrakete/workling.git
     script/plugin install git://github.com/tra/spawn.git 
 
 If you're on an older Rails version, there's also a subversion mirror wor workling (I'll do my best to keep it synched) at:
@@ -17,7 +17,7 @@ If you're on an older Rails version, there's also a subversion mirror wor workli
 
 ## Writing and calling Workers
 
-This is pretty easy. Just put cow_worker.rb into into app/workers, and subclass Workling::Base:
+This is pretty easy. Just put `cow_worker.rb` into into `app/workers`, and subclass `Workling::Base`:
 
     # handle asynchronous mooing.
     class CowWorker < Workling::Base 
@@ -44,11 +44,11 @@ Next, you'll want to call your workling in a controller. Your controller might l
       end
     end
 
-Notice the asynch_moo call to CowWorker. This will call the moo method on the CowWorker in the background, passing any parameters you like on. In fact, workling will call whatever comes after asynch_ as a method on the worker instance. 
+Notice the `asynch_moo` call to `CowWorker`. This will call the `moo` method on the `CowWorker` in the background, passing any parameters you like on. In fact, workling will call whatever comes after asynch_ as a method on the worker instance. 
 
 ## Worker Lifecycle
 
-All worker classes must inherit from this class, and be saved in app/workers. The Worker is loaded once, at which point the instance method 'create' is called. 
+All worker classes must inherit from this class, and be saved in `app/workers`. The Worker is loaded once, at which point the instance method `create` is called. 
 
 Calling `async_my_method` on the worker class will trigger background work. This means that the loaded Worker instance will receive a call to the method `my_method(:uid => "thisjobsuid2348732947923")`. 
 
@@ -60,7 +60,7 @@ Workling does log all exceptions that propagate out of the worker methods.
 
 ## Logging with Workling
 
-All workers have a logger method which returns the default logger, so you can log like this: 
+`RAILS_DEFAULT_LOGGER` is available in all workers. Workers also have a logger method which returns the default logger, so you can log like this: 
 
     logger.info("about to moo.")
 
@@ -97,7 +97,7 @@ Workling will now automatically detect and use Starling, unless you have also in
 
 ## Starting up the required processes
 
-Here's what you need to get up and started in development mode. 
+Here's what you need to get up and started in development mode. Look in config/starling.yml to see what the default ports are for other environments. 
 
     sudo starling -d -p 22122
     script/workling_starling_client start
@@ -151,17 +151,22 @@ Workling will now automatically detect and use Bj, unless you have also installe
 
 # Progress indicators and return stores
 
-Your worklings can write back to a return store. This allows you to write progress indicators, or access results from your workling. As above, this is fairly slim. Again, you can swap in any return store implementation you like without changing your code. They all behave like memcached. For tests, there is a memory return store, for production use there is currently a starling return store. You can easily add a new return store (over the database for instance) by subclassing Workling::Return::Store::Base. Configure it like this in your test environment:
+Your worklings can write back to a return store. This allows you to write progress indicators, or access results from your workling. As above, this is fairly slim. Again, you can swap in any return store implementation you like without changing your code. They all behave like memcached. For tests, there is a memory return store, for production use there is currently a starling return store. You can easily add a new return store (over the database for instance) by subclassing `Workling::Return::Store::Base`. Configure it like this in your test environment:
 
     Workling::Return::Store.instance = Workling::Return::Store::MemoryReturnStore.new
+    
+Setting and getting values works as follows. Read the next paragraph to see where the job-id comes from. 
 
-Here is an example workling that crawls an addressbook and puts results in a return store. Worling makes sure you have options[:uid] in your hash - pass this into the return store with your results. 
+    Workling.return.set("job-id-1", "moo")
+    Workling.return.get("job-id-1")           => "moo"
+
+Here is an example worker that crawls an addressbook and puts results into a return store. Workling makes sure you have a :uid in your argument hash - set the value into the return store using this uid as a key:
 
     require 'blackbook'
     class NetworkWorker < Workling::Base
       def search(options)
         results = Blackbook.get(options[:key], options[:username], options[:password])
-        Workling::Return::Store.set(options[:uid], results)
+        Workling.return.set(options[:uid], results)
       end
     end
 
@@ -171,10 +176,22 @@ call your workling as above:
 
 you can now use the @uid to query the return store:   
 
-    results = Workling::Return::Store.get(@uid)
+    results = Workling.return.get(@uid)
 
 of course, you can use this for progress indicators. just put the progress into the return store. 
 
 enjoy!
+
+# Contributors
+
+The following people contributed code to workling so far. Many thanks :) If I forgot anybody, I aplogise. Just drop me a note and I'll add you to the project so that you can amend this!
+
+* Andrew Carter (ascarter)
+* Chris Gaffney (gaffneyc)
+* Matthew Rudy (matthewrudy)
+* Larry Diehl (reeze)
+* grantr (francios)
+* David (digitalronin)
+* Dave Dupré
 
 Copyright (c) 2008 play/type GmbH, released under the MIT license

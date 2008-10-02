@@ -6,10 +6,12 @@ require 'rubygems'
 require 'active_support'
 require 'test/spec'
 require 'mocha'
-gem 'fiveruns-memcache-client'
-require 'memcache'
+
+Workling.try_load_a_memcache_client
 
 $:.unshift plugin_lib, plugin_test
+
+RAILS_ENV = "test"
 
 require "mocks/spawn"
 require "mocks/logger"
@@ -24,9 +26,9 @@ require "workling/remote/runners/starling_runner"
 require "workling/remote/runners/backgroundjob_runner"
 require "workling/return/store/memory_return_store"
 require "workling/return/store/starling_return_store"
+require "mocks/client"
 
 RAILS_ROOT = File.dirname(__FILE__) + "/.." # fake the rails root directory.
-RAILS_ENV = "test"
 RAILS_DEFAULT_LOGGER = Logger.new
 
 # worklings are in here.
