@@ -108,12 +108,18 @@ Workling copies a file called starling.yml into your applications config directo
 
 Notice that the default production port is 15151. This means you'll need to start Starling with -p 15151 on production. 
 
-You can also use this config file to pass configuration options to the memcache client which workling uses to connect to starling:
+You can also use this config file to pass configuration options to the memcache client which workling uses to connect to starling. use the key 'memcache_options' for this. 
 
     development:
       listens_on: localhost:22122
+      sleep_time: 2
+      reset_time: 30
       memcache_options:
         <memcachesetting>: <value>
+        
+Sleep time determines the wait time between polls against polls. A single poll will do one .get on every queue (there is a corresponding queue for each worker method).
+
+If there is a memcache error, the Poller will hang for a bit to give it a chance to fire up again and reset the connection. The wait time can be set with the key reset_time.
 
 ## Seeing what Starling is doing
 

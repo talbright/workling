@@ -1,12 +1,17 @@
 require 'workling/starling'
 
+#
+#  Polls Starling and dispatches jobs onto the correct workers.
+# 
 module Workling
   module Starling
-    
     class Poller
       
-      cattr_accessor :sleep_time # Seconds to sleep before looping
-      cattr_accessor :reset_time # Seconds to wait while resetting connection
+      # Seconds to sleep before looping
+      cattr_accessor :sleep_time
+      
+      # Seconds to wait while resetting connection
+      cattr_accessor :reset_time 
 
       def initialize(routing)
         Poller.sleep_time = Workling::Starling.config[:sleep_time] || 2
@@ -16,9 +21,8 @@ module Workling
         @workers = ThreadGroup.new
       end      
       
-      def logger
-        Workling::Base.logger
-      end
+      # returns the Workling::Base.logger
+      def logger; Workling::Base.logger; end
     
       def listen
                 

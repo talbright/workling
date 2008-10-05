@@ -1,5 +1,10 @@
 require 'workling/remote/runners/base'
 
+#
+#  Use Ara Howards BackgroundJob to run the work. BackgroundJob loads Rails once per requested Job. 
+#  It persists over the database, and there is no requirement for separate processes to be started. 
+#  Since rails has to load before each request, it takes a moment for the job to run. 
+#
 module Workling
   module Remote
     module Runners
@@ -11,6 +16,9 @@ module Workling
             Workling::Starling::Routing::ClassAndMethodRouting.new
         end
         
+        #  passes the job to bj by serializing the options to xml and passing them to
+        #  ./script/bj_invoker.rb, which in turn routes the deserialized args to the
+        #  appropriate worker. 
         def run(clazz, method, options = {})
           stdin = @@routing.queue_for(clazz, method) + 
                   " " + 

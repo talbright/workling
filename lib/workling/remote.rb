@@ -5,8 +5,13 @@ require "workling/remote/runners/backgroundjob_runner"
 
 require 'digest/md5'
 
+#
+#  Scoping Module for Runners. 
+#
 module Workling
   module Remote
+    
+    # set the desired runner here. this is initialized with Workling.default_runner. 
     mattr_accessor :dispatcher
     @@dispatcher = Workling.default_runner
     

@@ -1,4 +1,4 @@
-Version 0.3, 25.10.08
+Version 0.3, 25.09.08
 - added backgroundjob runner
 - added automatic detection of starling, spawn and backgroundjob to set default runner
 - made logging of exceptions more consistent across runners. 

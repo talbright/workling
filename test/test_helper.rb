@@ -15,6 +15,7 @@ RAILS_ENV = "test"
 require "mocks/spawn"
 require "mocks/logger"
 require "workling"
+
 Workling.try_load_a_memcache_client
 
 require "workling/discovery"

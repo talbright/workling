@@ -1,3 +1,6 @@
+#
+#  I can haz am in your Workling are belong to us! 
+#
 module Workling
   class WorklingError < StandardError; end
   class WorklingNotFoundError < WorklingError; end
@@ -9,6 +12,7 @@ module Workling
   
   mattr_accessor :load_path
   @@load_path = File.expand_path(File.join(File.dirname(__FILE__), '../../../../app/workers')) 
+  VERSION = "0.3"
   
   #
   # determine the runner to use if nothing is specifically set. workling will try to detect
