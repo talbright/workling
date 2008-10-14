@@ -57,6 +57,11 @@ module Workling
 
   # is spawn installed?
   def self.spawn_installed?
+    begin
+      require 'spawn'
+    rescue LoadError
+    end
+
     Object.const_defined? "Spawn"
   end
 

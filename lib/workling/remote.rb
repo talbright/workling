@@ -13,7 +13,11 @@ module Workling
     
     # set the desired runner here. this is initialized with Workling.default_runner. 
     mattr_accessor :dispatcher
-    @@dispatcher = Workling.default_runner
+    
+    # retrieve the dispatcher or instantiate it using the defaults
+    def self.dispatcher
+      @@dispatcher ||= Workling.default_runner
+    end
     
     # generates a unique identifier for this particular job. 
     def self.generate_uid(clazz, method)

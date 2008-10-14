@@ -192,6 +192,8 @@ enjoy!
 
 The following people contributed code to workling so far. Many thanks :) If I forgot anybody, I aplogise. Just drop me a note and I'll add you to the project so that you can amend this!
 
+Anybody who contributes fixes (with tests), or new functionality (whith tests) which is pulled into the main project, will also be be added to the project.
+
 * Andrew Carter (ascarter)
 * Chris Gaffney (gaffneyc)
 * Matthew Rudy (matthewrudy)
@@ -199,5 +201,7 @@ The following people contributed code to workling so far. Many thanks :) If I fo
 * grantr (francios)
 * David (digitalronin)
 * Dave Dupré
+* Douglas Shearer (dougal)
+* Nick Plante (zapnap)
 
 Copyright (c) 2008 play/type GmbH, released under the MIT license
