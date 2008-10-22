@@ -20,4 +20,13 @@ context "the memory return store" do
     store = Workling::Return::Store::MemoryReturnStore.new
     store.get(:bollocks).should.equal nil
   end
+  
+  specify "should be able to set and get two items into the same store" do
+    store = Workling::Return::Store::MemoryReturnStore.new
+    store.set(:gender, :male)
+    store.set(:gender, :female)
+    store.get(:key)
+    store.get(:key).should.equal :female
+  end
+
 end
