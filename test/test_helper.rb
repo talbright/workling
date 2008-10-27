@@ -32,6 +32,7 @@ require "workling/remote/runners/starling_runner"
 require "workling/remote/runners/backgroundjob_runner"
 require "workling/return/store/memory_return_store"
 require "workling/return/store/starling_return_store"
+require "workling/return/store/iterator"
 require "mocks/client"
 
 # worklings are in here.
