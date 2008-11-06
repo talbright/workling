@@ -1,12 +1,12 @@
 require File.dirname(__FILE__) + '/test_helper.rb'
 
-context "the starling poller" do
+context "the dispatcher poller" do
   setup do
-    routing = Workling::Starling::Routing::ClassAndMethodRouting.new
+    routing = Workling::Routing::ClassAndMethodRouting.new
    
     # the memoryreturnstore behaves exactly like memcache. 
     @connection = Workling::Return::Store::MemoryReturnStore.new
-    @client = Workling::Starling::Poller.new(routing)
+    @client = Workling::Remote::Invokers::Poller.new(routing, Workling::Clients::MemcacheQueue)
   end
   
   specify "should invoke Util.echo with the arg 'hello' if the string 'hello' is set onto the queue utils__echo" do
@@ -22,7 +22,7 @@ context "the starling poller" do
     
     client = mock()
     client.expects(:get).at_least_once.returns("hi")
-    Workling::Starling::Client.expects(:new).at_least_once.returns(client)
+    Workling::Clients::MemcacheQueue.expects(:new).at_least_once.returns(client)
     
     # Don't take longer than 10 seconds to shut this down. 
     Timeout::timeout(10) do

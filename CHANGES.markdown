@@ -1,3 +1,9 @@
+Version 0.3.8
+- full support for rudeq
+- refactored pollers. now now longer mainly about starling
+- refactored starling client, converted to generalized memcachequeue client.
+- changed runner script to be more generic
+
 Version 0.3.1, 15.10.08
 - fixed to autodiscovery code bugs. 
 - introduced Workling::VERSION
@@ -17,7 +23,7 @@ Version 0.2.5, 02.09.08
 
 Version 0.2.4, 08.06.08
 - accept both async_ and asynch_ as prefixes for workling method invocation. thank you francois beausoleil!
-- added memcached configuration options to starling.yml. see example yml for details. thank you larry diehl!
+- added memcached configuration options to workling.yml. see example yml for details. thank you larry diehl!
 - re-raise exceptions if there is a problem adding an item to the starling queue. thank you digitalronin!
 - added status script for starling client. thank you andrew carter!
 - applied patches from dave dupre: http://davedupre.com/2008/03/29/ruby-background-tasks-with-starling-part-2/
@@ -38,7 +44,7 @@ Version 0.2, 13.02.08 rev. 21
 - progress bars or returning results now possible with return stores. use these to communicate back from your workling.
 - memory store for testing and starling store added. 
 - now generates uids for workling jobs. these are returned by the runner.
-- extracted Workling::Starling::Client
+- extracted Workling::Clients::Starling
 - clearer file structure for workling
 
 Version 0.1, 06.02.08

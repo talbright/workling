@@ -23,8 +23,8 @@ require "workling/base"
 Workling.try_load_a_memcache_client
 
 require "workling/discovery"
-require "workling/starling/routing/class_and_method_routing"
-require "workling/starling/poller"
+require "workling/routing/class_and_method_routing"
+require "workling/remote/invokers/poller"
 require "workling/remote"
 require "workling/remote/runners/not_remote_runner"
 require "workling/remote/runners/spawn_runner"

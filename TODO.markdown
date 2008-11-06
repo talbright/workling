@@ -1,2 +1,2 @@
-* refactor starling poller. extract strategies (threaded, clustered)
+* extract poller strategies (threaded, clustered)
 * add an ampq runner
