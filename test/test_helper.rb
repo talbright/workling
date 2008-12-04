@@ -38,6 +38,7 @@ require "workling/return/store/memory_return_store"
 require "workling/return/store/starling_return_store"
 require "mocks/client"
 require "clients/memory_queue_client"
+require "runners/thread_runner"
 
 # worklings are in here.
 Workling.load_path ="#{ plugin_root }/test/workers"
