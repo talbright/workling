@@ -13,14 +13,18 @@ module Workling
     
     # set the desired runner here. this is initialized with Workling.default_runner. 
     mattr_accessor :dispatcher
-    
-    # set the desired invoker. this class grabs work from the job broker and executes it. 
+
+    # set the desired invoker. this class grabs work from the job broker and executes it.
     mattr_accessor :invoker
-    @@invoker ||= Workling::Remote::Invokers::ThreadedPoller
     
     # retrieve the dispatcher or instantiate it using the defaults
     def self.dispatcher
       @@dispatcher ||= Workling.default_runner
+    end
+
+    # retrieve the invoker or instantiate one based on whats in workling.yml
+    def self.invoker
+      @@invoker ||= self.select_invoker
     end
     
     # generates a unique identifier for this particular job. 
@@ -38,5 +42,35 @@ module Workling
       dispatcher.run(clazz, method, options)
       uid
     end
+
+    private
+
+    # Select which invoke to load based on what is defined in workling.yml. Defaults to thread_poller
+    # if none are specified.
+    def self.select_invoker
+      case(Workling.config[:invoker])
+      when 'basic_poller'
+        require 'workling/remote/invokers/basic_poller'
+        Workling::Remote::Invokers::BasicPoller
+
+      when 'thread_pool_poller'
+        require 'workling/remote/invokers/thread_pool_poller'
+        Workling::Remote::Invokers::ThreadPoolPoller
+
+      when 'eventmachine_subscriber'
+        require 'workling/remote/invokers/eventmachine_subscriber'
+        Workling::Remote::Invokers::EventmachineSubscriber
+
+      when 'threaded_poller', nil
+        require 'workling/remote/invokers/threaded_poller'
+        Workling::Remote::Invokers::ThreadedPoller
+
+      else
+        require 'workling/remote/invokers/threaded_poller'
+        Workling.logger.error("Nothing is known about #{Workling.config[:invoker]} defaulting to thread_poller")
+        Workling::Remote::Invokers::ThreadedPoller
+      end
+    end
+
   end
 end
