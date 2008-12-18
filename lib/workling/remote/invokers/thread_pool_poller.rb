@@ -52,6 +52,8 @@ module Workling
           @pool_capacity = (Workling.config[:pool_size] || 25).to_i
         end
 
+        # Start up the checking for items on the queue. Will block until stop is called and all pollers
+        # and workers have finished execution.
         def listen
           logger.info("Starting ThreadPoolPoller...")
 
@@ -65,14 +67,19 @@ module Workling
             end
           end
 
-          # Wait for the poller and all outstanding workers to finish
+          # Wait for the poller and all outstanding workers to finish.
+          #
+          # This is a little tricky because we're doing some synchronization on pollers... but
+          # the list of pollers is never modified after being setup above.
           @pollers.synchronize { @pollers.dup }.each { |p| p.join }
+          @pollers.synchronize { @pollers.clear }
           logger.info("Pollers have all finished")
 
           @workers.synchronize { @workers.dup }.each { |w| w.join }
           logger.info("Worker threads have all finished")
         end
 
+        # Instructs the thread pool poller to stop checking for new jobs on the backing queue.
         def stop
           logger.info("Stopping thread pool invoker pollers and workers...")
           @pollers.synchronize { @pollers.each { |p| p[:shutdown] = true } }
@@ -83,10 +90,12 @@ module Workling
           worker_threads < @pool_capacity
         end
 
+        # Number of correctly active worker threads
         def worker_threads
           @workers.synchronize { @workers.size }
         end
 
+        # Number of currently active polling threads
         def poller_threads
           @pollers.synchronize { @pollers.size }
         end
@@ -127,7 +136,9 @@ module Workling
                         logger.error(e) if logger.error?
                       ensure
                         # Make sure the current thread's connection gets released
-                        ActiveRecord::Base.connection_pool.release_connection
+                        if(ActiveRecord::Base.connection_pool)
+                          ActiveRecord::Base.connection_pool.release_connection
+                        end
 
                         # Remove this thread from the list of active workers
                         @workers.synchronize do
@@ -144,7 +155,6 @@ module Workling
                 logger.error("FAILED to connect with queue #{ queue }: #{ e } }") if logger.error?
                 sleep(@reset_time)
 
-                # FIXME: This definitely will blow up when using AMQP
                 client.connection.reset
               end
             end

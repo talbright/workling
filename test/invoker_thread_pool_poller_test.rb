@@ -32,15 +32,21 @@ context "the invoker 'thread pool poller'" do
 
     mock_client do |client|
       client.expects(:retrieve).at_least_once.returns(nil)
+      client.expects(:retrieve).with('utils__echo').returns({ :uid => '1234'}, nil)
     end
+
+    @invoker.expects(:run).once.with('utils__echo', { :uid => '1234' })
 
     should.not.raise do
       Timeout.timeout(10) do
         with_running_invoker do
-          # Noop
+          sleep 0.5 # noop
         end
       end
     end
+
+    @invoker.poller_threads.should.be(0)
+    @invoker.worker_threads.should.be(0)
   end
 
   specify "should not retrieve any items from the backing queue if no workers are available" do
@@ -52,6 +58,23 @@ context "the invoker 'thread pool poller'" do
 
     with_running_invoker do
       @invoker.worker_threads.should.be 0
+      sleep 0.5
+    end
+  end
+
+  specify "should reset connection on memcache failure" do
+    mock_client do |client|
+      client.stubs(:retrieve)
+      client.expects(:retrieve).with('utils__echo').raises(MemCache::MemCacheError)
+      client.expects(:connection).returns(mock(:reset))
+    end
+
+    # Stub out sleep so tests don't take forever
+    @invoker.stubs(:sleep)
+    @invoker.expects(:sleep).with(30.0)
+
+    with_running_invoker do
+      sleep 0.5
     end
   end
 
