@@ -30,21 +30,52 @@ context "the invoker 'thread pool poller'" do
     # Assumptions
     Workling::Discovery.discovered.size.should.not.be 0
 
+    mock_client do |client|
+      client.expects(:retrieve).at_least_once.returns(nil)
+    end
+
+    should.not.raise do
+      Timeout.timeout(10) do
+        with_running_invoker do
+          # Noop
+        end
+      end
+    end
+  end
+
+  specify "should not retrieve any items from the backing queue if no workers are available" do
+    mock_client do |client|
+      client.expects(:retrieve).never
+    end
+
+    @invoker.stubs(:workers_available?).returns(false)
+
+    with_running_invoker do
+      @invoker.worker_threads.should.be 0
+    end
+  end
+
+  private
+  def with_running_invoker(&block)
+    listener = Thread.new { @invoker.listen }
+
+    # Wait until the invoker has finished starting
+    while(@invoker.poller_threads != Workling::Discovery.discovered.size)
+      Thread.pass
+    end
+
+    yield
+
+    @invoker.stop
+    listener.join
+  end
+
+  def mock_client(&block)
     client = mock()
     client.stubs(:connect)
-    client.expects(:retrieve).at_least_once.returns(nil)
+
+    yield client
+
     @client.class.expects(:new).times(Workling::Discovery.discovered.size).returns(client)
-
-    Timeout.timeout(10) do
-      listener = Thread.new { @invoker.listen }
-
-      # Wait until the invoker has finished starting
-      while(@invoker.poller_threads != Workling::Discovery.discovered.size)
-        Thread.pass
-      end
-
-      @invoker.stop
-      listener.join
-    end
   end
 end
