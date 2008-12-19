@@ -151,11 +151,12 @@ module Workling
                   # Break out of the checks early if shutdown was called
                   break if Thread.current[:shutdown]
                 end
-              rescue MemCache::MemCacheError => e
+              rescue Workling::WorklingError => e
                 logger.error("FAILED to connect with queue #{ queue }: #{ e } }") if logger.error?
                 sleep(@reset_time)
 
-                client.connection.reset
+                # FIXME: This will _definitely_ blow up with AMQP since there is no reset call
+                client.reset
               end
             end
 

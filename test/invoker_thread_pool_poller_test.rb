@@ -65,8 +65,8 @@ context "the invoker 'thread pool poller'" do
   specify "should reset connection on memcache failure" do
     mock_client do |client|
       client.stubs(:retrieve)
-      client.expects(:retrieve).with('utils__echo').raises(MemCache::MemCacheError)
-      client.expects(:connection).returns(mock(:reset))
+      client.expects(:retrieve).with('utils__echo').raises(Workling::WorklingConnectionError)
+      client.expects(:reset)
     end
 
     # Stub out sleep so tests don't take forever
