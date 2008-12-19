@@ -136,7 +136,7 @@ module Workling
                 logger.debug("Calling #{handler.class.to_s}\##{method_name}(#{result.inspect})")
                 handler.dispatch_to_worker_method(method_name, result)
               end
-            rescue MemCache::MemCacheError => e
+            rescue Workling::WorklingError => e
               logger.error("FAILED to connect with queue #{ queue }: #{ e } }")
               raise e
             end
