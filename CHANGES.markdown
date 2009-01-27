@@ -1,3 +1,9 @@
+Version 0.4.2.2, 29.11.08
+- turned Workling.load_path into an Array.
+
+Version 0.4.2.1, 27.11.08
+- fixed raise exceptions if non existing worker methods are called
+
 Version 0.4.2, 10.11.08
 - added information about invokers and clients to the readme
 - fixed dependence on amqp library
