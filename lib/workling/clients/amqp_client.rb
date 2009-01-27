@@ -7,7 +7,7 @@ Workling.try_load_an_amqp_client
 module Workling
   module Clients
     class AmqpClient < Workling::Clients::Base
-      
+            
       # starts the client. 
       def connect
         begin
@@ -21,16 +21,29 @@ module Workling
       # terminates, the connection is closed anyway. 
       def close; true; end
       
+      # Decide which method of marshalling to use:
+      def cast_value(value, origin)
+        case Workling.config[:ymj]
+        when 'marshal'
+          @cast_value = origin == :request ? Marshal.dump(value) : Marshal.load(value)
+        when 'yaml'
+          @cast_value = origin == :request ? YAML.dump(value) : YAML.load(value)
+        else 
+          @cast_value = origin == :request ? Marshal.dump(value) : Marshal.load(value)
+        end
+        @cast_value
+      end
+      
       # subscribe to a queue
       def subscribe(key)
         @amq.queue(key).subscribe do |value|
-          yield Marshal.load(value)
+          yield cast_value(value,:subscribe)
         end
       end
       
       # request and retrieve work
       def retrieve(key); @amq.queue(key); end
-      def request(key, value); @amq.queue(key).publish(Marshal.dump(value)); end
+      def request(key, value); @amq.queue(key).publish(cast_value(value,:request)); end
     end
   end
 end

@@ -110,6 +110,8 @@ Notice that the default production port is 15151. This means you'll need to star
 
 You can also use this config file to pass configuration options to the memcache client which workling uses to connect to starling. use the key 'memcache_options' for this. 
 
+In addition, you can use this config to set the type of marshaling that the amqp client uses.  Use the 'ymj' key for this.  Current options are 'yaml' to use YAML.dump and YAML.load and 'marshal' to use Marshal.dump and Marshal.load.  If no value is set, it defaults to 'marshal'.
+
 You can also set sleep time for each Worker. See the key 'listeners' for this. Put in the modularized Class name as a key. 
 
     development:
@@ -121,11 +123,13 @@ You can also set sleep time for each Worker. See the key 'listeners' for this. P
           sleep_time: 20
       memcache_options:
         namespace: myapp_development
+      ymj: yaml
         
     production:
       listens_on: localhost:22122, localhost:221223, localhost:221224
       sleep_time: 2
       reset_time: 30
+      ymj: marshal
       
 Note that you can cluster Starling instances by passing a comma separated list of values to 
         
