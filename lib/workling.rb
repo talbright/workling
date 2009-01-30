@@ -89,11 +89,18 @@ module Workling
     Object.const_defined? "Bj"
   end
   
-  # tries to load fiveruns-memcache-client. if this isn't found, 
-  # memcache-client is searched for. if that isn't found, don't do anything. 
+  # Tries to load one of the following:
+  #   mperham-memcache-client   => current version
+  #   fivefuns-memcache-client  => bug fixes fork of the original memcache-client
+  #   memcache-client           => original memcache-client... has some bugs
   def self.try_load_a_memcache_client
     begin
-      gem 'fiveruns-memcache-client'
+      begin
+        gem 'mperham-memcache-client'
+      rescue Gem::LoadError
+        gem 'fiveruns-memcache-client'
+      end
+
       require 'memcache'
     rescue Gem::LoadError
       begin
