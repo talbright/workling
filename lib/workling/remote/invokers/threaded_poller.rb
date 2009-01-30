@@ -23,11 +23,6 @@ module Workling
         end      
           
         def listen                
-          # Allow concurrency for our tasks
-          if defined?(ActiveRecord::Base)
-            ActiveRecord::Base.allow_concurrency = true 
-          end
-
           # Create a thread for each worker.
           Workling::Discovery.discovered.each do |clazz|
             logger.debug("Discovered listener #{clazz}")
