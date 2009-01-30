@@ -1,8 +1,5 @@
 require File.dirname(__FILE__) + '/test_helper.rb'
 
-gem 'activerecord'
-require 'activerecord'
-
 context "the invoker 'threaded poller'" do
   setup do
     routing = Workling::Routing::ClassAndMethodRouting.new

@@ -4,14 +4,17 @@ plugin_lib = File.join plugin_root, 'lib'
 
 require 'rubygems'
 #require 'active_support'
-#require 'active_record'
+
+gem 'activerecord'
+require 'active_record'
+
 require 'test/spec'
 require 'mocha'
 
 $:.unshift plugin_lib, plugin_test
 
 RAILS_ENV = "test"
-#RAILS_ROOT = File.dirname(__FILE__) + "/.." # fake the rails root directory.
+RAILS_ROOT = File.dirname(__FILE__) + "/.." # fake the rails root directory.
 
 require "mocks/spawn"
 require "mocks/logger"
