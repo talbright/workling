@@ -42,9 +42,9 @@ module Workling
 
   def self.env
     @env ||= if defined?(RAILS_ENV)
-               RAILS_ENV
+               RAILS_ENV.to_s
              elsif defined?(RACK_ENV)
-               RACK_ENV
+               RACK_ENV.to_s
              end
   end
 
