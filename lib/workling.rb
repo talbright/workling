@@ -171,3 +171,6 @@ end
 require "workling/discovery"
 require "workling/base"
 require "workling/remote"
+require "workling/return/store/base"
+require "workling/return/store/memory_return_store"
+require "workling/return/store/starling_return_store"
