@@ -15,8 +15,13 @@ puts '** Rails loaded.'
 puts "** Starting #{ invoker }..."
 puts '** Use CTRL-C to stop.'
 
-ActiveRecord::Base.logger = Workling::Base.logger
-ActionController::Base.logger = Workling::Base.logger
+if defined?(ActiveRecord::Base)
+  ActiveRecord::Base.logger = Workling::Base.logger
+end
+
+if defined?(ActionController::Base)
+  ActionController::Base.logger = Workling::Base.logger
+end
 
 trap(:INT) { poller.stop; exit }
 

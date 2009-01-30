@@ -14,9 +14,6 @@
 #
 module Workling
   class Base
-    cattr_accessor :logger
-    @@logger ||= ::RAILS_DEFAULT_LOGGER
-    
     def self.inherited(subclass)
       Workling::Discovery.discovered << subclass
     end
@@ -51,6 +48,14 @@ module Workling
       else
         super
       end
+    end
+    
+    def self.logger
+      @logger ||= defined?(RAILS_DEFAULT_LOGGER) ? ::RAILS_DEFAULT_LOGGER : Logger.new($stdout)
+    end
+
+    def logger
+      self.class.logger
     end
   end
 end

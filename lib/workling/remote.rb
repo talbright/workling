@@ -2,6 +2,7 @@ require "workling/remote/runners/not_remote_runner"
 require "workling/remote/runners/spawn_runner"
 require "workling/remote/runners/starling_runner"
 require "workling/remote/runners/backgroundjob_runner"
+require "workling/remote/invokers/threaded_poller"
 
 require 'digest/md5'
 

@@ -24,7 +24,9 @@ module Workling
           
         def listen                
           # Allow concurrency for our tasks
-          ActiveRecord::Base.allow_concurrency = true
+          if defined?(ActiveRecord::Base)
+            ActiveRecord::Base.allow_concurrency = true 
+          end
 
           # Create a thread for each worker.
           Workling::Discovery.discovered.each do |clazz|
@@ -38,7 +40,10 @@ module Workling
           logger.debug("Reaped listener threads. ")
         
           # Clean up all the connections.
-          ActiveRecord::Base.verify_active_connections!
+          if defined?(ActiveRecord::Base)
+            ActiveRecord::Base.verify_active_connections!
+          end
+
           logger.debug("Cleaned up connection: out!")
         end
       
@@ -96,11 +101,13 @@ module Workling
               #     threads would hit serious issues at this block of code without 
               #     the mutex.            
               #
-              @mutex.synchronize do 
-                unless ActiveRecord::Base.connection.active?  # Keep MySQL connection alive
-                  unless ActiveRecord::Base.connection.reconnect!
-                    logger.fatal("Failed - Database not available!")
-                    break
+              if defined?(ActiveRecord::Base)
+                @mutex.synchronize do 
+                  unless ActiveRecord::Base.connection.active?  # Keep MySQL connection alive
+                    unless ActiveRecord::Base.connection.reconnect!
+                      logger.fatal("Failed - Database not available!")
+                      break
+                    end
                   end
                 end
               end

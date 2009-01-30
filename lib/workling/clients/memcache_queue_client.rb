@@ -1,4 +1,5 @@
 require 'workling/clients/base'
+require 'memcache'
 
 #
 #  This client can be used for all Queue Servers that speak Memcached, such as Starling. 
@@ -69,6 +70,14 @@ module Workling
           end
         end
         
+        [:get, :set].each do |method|
+          class_eval <<-EOS
+          def #{method}(*args, &block)
+            self.connection.#{method}(*args, &block)
+          end
+          EOS
+        end
+
         # delegates directly through to the memcache connection. 
         def method_missing(method, *args)
           begin
