@@ -15,4 +15,36 @@ context "class and method routing" do
     routing = Workling::Routing::ClassAndMethodRouting.new
     routing.queue_names_routing_class(Util).should.include 'utils__echo'
   end
+
+  specify "attached queue should return subscription key when given class" do
+    routing = Workling::Routing::ClassAndMethodRouting.new
+    routing.queue_names_routing_class(Util).should.include 'my very_own queue'
+  end
+
+  specify "attached queue should return class when given the subscription key" do
+    routing = Workling::Routing::ClassAndMethodRouting.new
+    routing['my very_own queue'].class.to_s.should.equal "Util"
+  end
+
+  specify "queue_name should be properly parsed for an unexposed method" do
+    routing = Workling::Routing::ClassAndMethodRouting.new
+    routing.method_name('utils__echo').should == 'echo'
+  end
+
+  specify "queue_name should be properly looked up for an exposed method" do
+    routing = Workling::Routing::ClassAndMethodRouting.new
+    routing.method_name('my very_own queue').should == 'very_open'
+  end
+
+  specify "exposed method should should be registered by its queue" do
+    routing = Workling::Routing::ClassAndMethodRouting.new
+    routing.queue_for(Util, 'very_open').should == 'my very_own queue'
+  end
+
+  specify "unexposed methods should be registered by their computed name" do
+    routing = Workling::Routing::ClassAndMethodRouting.new
+    routing.queue_for(Util, 'echo').should == 'utils__echo'
+  end
 end
+
+

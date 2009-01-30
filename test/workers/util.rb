@@ -12,4 +12,9 @@ class Util < Workling::Base
   def stuffing(contents)
     # expects contents. 
   end
+
+  expose :very_open, :as => "my very_own queue"
+  def very_open(chocolate)
+    
+  end
 end

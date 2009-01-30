@@ -16,11 +16,42 @@ module Workling
   class Base
     cattr_accessor :logger
     @@logger ||= ::RAILS_DEFAULT_LOGGER
-    
+
+    cattr_accessor :exposed_methods
+    @@exposed_methods ||= {}
+
     def self.inherited(subclass)
       Workling::Discovery.discovered << subclass
     end
-    
+
+    # expose a method using a custom queue name
+    def self.expose(method, options)
+      self.exposed_methods[method.to_s] = options[:as]
+    end
+
+    # identify the queue for a given method
+    def self.queue_for(method)
+      if self.exposed_methods.has_key?(method)
+        self.exposed_methods[method]
+      else
+        "#{ self.to_s.tableize }/#{ method }".split("/").join("__") # Don't split with : because it messes up memcache stats
+      end
+    end
+
+    # identify the method linked to the queue
+    def self.method_for(queue)
+      if self.exposed_methods.invert.has_key?(queue)
+        self.exposed_methods.invert[queue]
+      else
+        queue.split("__").last
+      end
+    end
+
+    def method_for(queue)
+      self.class.method_for(queue)
+    end
+
+
     def initialize
       super
       
