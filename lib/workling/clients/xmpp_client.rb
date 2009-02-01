@@ -1,5 +1,5 @@
 require 'workling/clients/base'
-Workling.try_load_an_xmpp4r
+Workling.try_load_xmpp4r
 
 #
 #  An XMPP client
