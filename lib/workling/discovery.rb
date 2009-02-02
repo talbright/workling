@@ -8,7 +8,7 @@ module Workling
     
     # requires worklings so that they are added to routing. 
     def self.discover!
-      Dir.glob(Workling.load_path.map { |p| "#{ p }/**/*.rb" }).each { |wling| require wling }
+      Workling.load_path.map{|p| Dir.glob("#{p}/**/*.rb")}.flatten.each{|wling| require wling}
     end
   end
 end
