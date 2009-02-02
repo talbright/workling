@@ -1,3 +1,23 @@
+require 'optparse'
+
+def identify_environment
+  environment = (ENV['RAILS_ENV'] || "development").dup
+  ARGV.options do |opts|
+    opts.separator ""
+    opts.on("-e", "--environment=name", String,
+            "Specifies the environment to run this server under (test/development/production).",
+            "Default: development") { |v| environment = v }
+    opts.separator ""
+    opts.on("-h", "--help",
+            "Show this help message.") { puts opts; exit }
+    opts.parse!
+  end
+  environment
+end
+
+ENV["RAILS_ENV"] = identify_environment
+puts "=> Loading Rails with #{ENV["RAILS_ENV"]} environment..."
+
 puts '=> Loading Rails...'
 
 require File.dirname(__FILE__) + '/../../../../config/environment'
