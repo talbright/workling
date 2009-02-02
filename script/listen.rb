@@ -18,8 +18,6 @@ end
 ENV["RAILS_ENV"] = identify_environment
 puts "=> Loading Rails with #{ENV["RAILS_ENV"]} environment..."
 
-puts '=> Loading Rails...'
-
 require File.dirname(__FILE__) + '/../../../../config/environment'
 require File.dirname(__FILE__) + '/../lib/workling/remote'
 require File.dirname(__FILE__) + '/../lib/workling/remote/invokers/basic_poller'
