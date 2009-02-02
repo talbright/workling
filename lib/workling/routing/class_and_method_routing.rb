@@ -26,6 +26,8 @@ module Workling
               
       # returns the routing string, given a class and method.
       def self.queue_for(clazz, method)
+        # this is lifted from the Rails constantize method
+        clazz = Object.module_eval("::#{clazz}") unless clazz.is_a?(Class)
         clazz.queue_for method
       end
       
