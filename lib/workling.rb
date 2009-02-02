@@ -131,6 +131,7 @@ module Workling
     end
   end
 
+
   #
   #  returns a config hash. reads RAILS_ROOT/config/workling.yml
   #
