@@ -71,7 +71,7 @@ module Workling
             end
           end
 
-          hread_sleep_time ||= self.class.sleep_time
+          thread_sleep_time ||= self.class.sleep_time
                 
           # Setup connection to client (one per thread)
           connection = @client_class.new
