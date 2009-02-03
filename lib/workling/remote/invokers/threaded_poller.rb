@@ -82,17 +82,9 @@ module Workling
           while (!Thread.current[:shutdown]) do
             begin
             
-              # Thanks for this Brent! 
-              #
-              #     ...Just a heads up, due to how rails’ MySQL adapter handles this  
-              #     call ‘ActiveRecord::Base.connection.active?’, you’ll need 
-              #     to wrap the code that checks for a connection in in a mutex.
-              #
-              #     ....I noticed this while working with a multi-core machine that 
-              #     was spawning multiple workling threads. Some of my workling 
-              #     threads would hit serious issues at this block of code without 
-              #     the mutex.            
-              #
+              # Wrap code calling ActiveRecord::Base.connection_active? in a
+              # mutex to avoid problem with spawning threads on multi-core
+              # machines running MySQL.
               @mutex.synchronize do 
                 unless ActiveRecord::Base.connection.active?  # Keep MySQL connection alive
                   unless ActiveRecord::Base.connection.reconnect!
