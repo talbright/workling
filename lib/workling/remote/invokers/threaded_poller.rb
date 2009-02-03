@@ -22,10 +22,7 @@ module Workling
           @mutex = Mutex.new
         end      
           
-        def listen                
-          # Allow concurrency for our tasks
-          ActiveRecord::Base.allow_concurrency = true
-
+        def listen
           # Create a thread for each worker.
           Workling::Discovery.discovered.each do |clazz|
             logger.debug("Discovered listener #{clazz}")
