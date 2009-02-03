@@ -18,6 +18,7 @@ RAILS_DEFAULT_LOGGER.level = Logger::WARN
 require "mocks/spawn"
 require "mocks/logger"
 require "workling"
+require "workling_server"
 require "workling/base"
 
 Workling.try_load_a_memcache_client
