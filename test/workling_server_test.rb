@@ -1,5 +1,15 @@
 require File.dirname(__FILE__) + '/test_helper.rb'
 
+class MyClient < Workling::Clients::Base; end;
+class MyInvoker < Workling::Remote::Invokers::Base
+  attr_reader :router, :client_class
+  def initialize(router, client_class)
+    @router = router
+    @client_class = client_class
+  end
+end
+class MyRouting < Workling::Routing::Base; end;
+
 context "splitting between daemon and workling options" do
   specify "it should split the args array at the separator" do
     WorklingServer.partition_options(["start", "--", "--environment=production"]).should == [["start"], ["--environment=production"]]
@@ -54,14 +64,13 @@ context "parsing daemon options" do
   end
 end
 
-
 context "parsing workling options" do
   specify "should parse the -c option" do
-    WorklingServer.parse_workling_options(["--", "-c", "Workling::Remote::Runners::SpawnRunner"]).should == {:client_class => "Workling::Remote::Runners::SpawnRunner"}
+    WorklingServer.parse_workling_options(["--", "-c", "Workling::Clients::MemcacheQueueClient"]).should == {:client_class => "Workling::Clients::MemcacheQueueClient"}
   end
 
   specify "should parse the --client option" do
-    WorklingServer.parse_workling_options(["--", "--client=Workling::Remote::Runners::SpawnRunner"]).should == {:client_class => "Workling::Remote::Runners::SpawnRunner"}
+    WorklingServer.parse_workling_options(["--", "--client=Workling::Clients::MemcacheQueueClient"]).should == {:client_class => "Workling::Clients::MemcacheQueueClient"}
   end
 
 
@@ -103,5 +112,20 @@ context "parsing workling options" do
 
   specify "should ignore daemon options" do
     WorklingServer.parse_workling_options(["start", "--", "--environment=production"]).should == {:rails_env => "production"}
+  end
+end
+
+context "building poller" do
+  specify "should extract the relevant classes and objects" do
+    options = {
+      :client_class => "MyClient",
+      :invoker_class => "MyInvoker",
+      :routing_class => "MyRouting",
+      :workling_root => "."
+    }
+    poller = WorklingServer.build_poller(options)
+    poller.should.be.a.kind_of MyInvoker
+    poller.router.should.be.a.kind_of MyRouting
+    poller.client_class.should == MyClient
   end
 end

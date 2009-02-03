@@ -20,7 +20,7 @@ module Workling
   end
   
   mattr_accessor :load_path
-  @@load_path = [ File.expand_path(File.join(File.dirname(__FILE__), '../../../../app/workers')) ]
+  @@load_path = [ File.expand_path(File.join(File.dirname(__FILE__), '../../../../app/workers/**/*.rb')) ]
   VERSION = "0.4.2.2"
   
   #

@@ -1,6 +1,16 @@
 require 'optparse'
 
 class WorklingServer
+  @@in_server_mode = false
+  def self.in_server_mode
+    @@in_server_mode
+  end
+
+  def self.in_server_mode=(server_mode)
+    @@in_server_mode = server_mode
+  end
+
+
   def self.partition_options(args)
     daemon = []
     workling = []
@@ -45,5 +55,52 @@ class WorklingServer
     end
     opts.parse!(partition_options(args).last)
     options
+  end
+
+
+  def self.build_poller(options)
+    require options[:workling_root] + '/lib/workling/remote'
+    require options[:workling_root] + '/lib/workling/remote/invokers/basic_poller'
+    require options[:workling_root] + '/lib/workling/remote/invokers/threaded_poller'
+    require options[:workling_root] + '/lib/workling/remote/invokers/eventmachine_subscriber'
+    require options[:workling_root] + '/lib/workling/routing/class_and_method_routing'
+
+    routing_class = Object.module_eval("::#{options[:routing_class]}")
+    client_class = Object.module_eval("::#{options[:client_class]}")
+    invoker_class = Object.module_eval("::#{options[:invoker_class]}")
+    invoker_class.new(routing_class.new, client_class)
+  end
+
+
+  def self.run(options)
+    WorklingServer.in_server_mode = true
+
+    ENV["RAILS_ENV"] = options[:rails_env]
+    puts "=> Loading Rails with #{ENV["RAILS_ENV"]} environment..."
+
+    require options[:rails_root] + '/config/environment'
+
+    Workling.load_path = options[:load_path]
+
+    Workling::Discovery.discover!
+    Workling.config
+
+    poller = build_poller options
+
+    puts '** Rails loaded.'
+    puts "** Starting #{ poller.class }..."
+    puts '** Use CTRL-C to stop.'
+
+    ActiveRecord::Base.logger = Workling::Base.logger
+    ActionController::Base.logger = Workling::Base.logger
+
+    trap(:INT) { poller.stop; exit }
+
+    begin
+      poller.listen
+    ensure
+      puts '** No Worklings found.' if Workling::Discovery.discovered.blank?
+      puts '** Exiting'
+    end
   end
 end

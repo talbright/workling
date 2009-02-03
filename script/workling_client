@@ -2,16 +2,28 @@
 require 'rubygems'
 require 'daemons'
 
-workling = File.join(File.dirname(__FILE__), '..', 'vendor', 'plugins', 'workling', 'script', 'listen.rb')
-options = {
+require File.join(File.dirname(__FILE__), '..', 'vendor', 'plugins', 'workling', 'lib', 'workling_server')
+
+daemon_options = {
   :app_name   => "workling",
-  :ARGV       => ARGV,
   :dir_mode   => :normal,
   :dir        => File.join(File.dirname(__FILE__), '..', 'log'),
   :log_output => true,
   :multiple   => false,
   :backtrace  => true,
-  :monitor    => true
-}
+  :monitor    => false
+}.merge(WorklingServer.parse_daemon_options(ARGV))
 
-Daemons.run(workling, options)
+workling_options = {
+  :client_class => "Workling::Clients::MemcacheQueueClient",
+  :invoker_class => "Workling::Remote::Invokers::ThreadedPoller",
+  :routing_class => "Workling::Routing::ClassAndMethodRouting",
+  :rails_root => File.expand_path(File.join(File.dirname(__FILE__), '..')),
+  :workling_root => File.expand_path(File.join(File.dirname(__FILE__), '../vendor/plugins/workling')),
+  :load_path => [ File.expand_path(File.join(File.dirname(__FILE__), '../app/workers/**/*.rb')) ],
+  :rails_env => (ENV['RAILS_ENV'] || "development").dup
+}.merge(WorklingServer.parse_workling_options(ARGV))
+
+Daemons.run_proc(daemon_options[:app_name], daemon_options) do
+  WorklingServer.run(workling_options)
+end
