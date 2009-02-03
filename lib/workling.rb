@@ -18,11 +18,11 @@ module Workling
         "config/workling.yml could not be loaded. check out README.markdown to see what this file should contain. "
     end
   end
-  
+
   mattr_accessor :load_path
   @@load_path = [ File.expand_path(File.join(File.dirname(__FILE__), '../../../../app/workers/**/*.rb')) ]
-  VERSION = "0.4.2.2"
-  
+  VERSION = "0.4.2.3"
+
   #
   # determine the runner to use if nothing is specifically set. workling will try to detect
   # starling, spawn, or bj, in that order. if none of these are found, notremoterunner will
@@ -145,6 +145,17 @@ module Workling
        # config files could not be read correctly
       raise ConfigurationError.new
     end
+  end
+  
+  #
+  #  Raises exceptions thrown inside of the worker. normally, these are logged to 
+  #  logger.error. it's easy to miss these log calls while developing, though. 
+  #
+  mattr_accessor :raise_exceptions
+  @@raise_exceptions = (RAILS_ENV = "test" || RAILS_ENV = "development")
+  
+  def self.raise_exceptions?
+    @@raise_exceptions
   end
   
   private
