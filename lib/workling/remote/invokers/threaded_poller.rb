@@ -68,6 +68,7 @@ module Workling
             if Workling.config[:listeners].has_key?(clazz.to_s)
               config = Workling.config[:listeners][clazz.to_s].symbolize_keys
               thread_sleep_time = config[:sleep_time] if config.has_key?(:sleep_time)
+              Thread.current.priority = config[:priority] if config.has_key?(:priority)
             end
           end
 
