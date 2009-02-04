@@ -43,6 +43,3 @@ require "runners/thread_runner"
 Workling.load_path = ["#{ plugin_root }/test/workers"]
 Workling::Return::Store.instance = Workling::Return::Store::MemoryReturnStore.new
 Workling::Discovery.discover!
-
-# make this behave like production code
-Workling.raise_exceptions = false

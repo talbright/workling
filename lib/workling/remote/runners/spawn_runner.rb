@@ -19,9 +19,7 @@ module Workling
     module Runners
       class SpawnRunner < Workling::Remote::Runners::Base
         cattr_accessor :options
-        
-        # use thread for development and test modes. easier to hunt down exceptions that way. 
-        @@options = { :method => (RAILS_ENV == "test" || RAILS_ENV == "development" ? :thread :fork) }
+        @@options = { :method => :fork }
         include Spawn if Workling.spawn_installed?
         
         # dispatches to Spawn, using the :fork option. 
