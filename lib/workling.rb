@@ -137,7 +137,7 @@ module Workling
   #  logger.error. it's easy to miss these log calls while developing, though. 
   #
   mattr_accessor :raise_exceptions
-  @@raise_exceptions = (RAILS_ENV = "test" || RAILS_ENV = "development")
+  @@raise_exceptions = (RAILS_ENV == "test" || RAILS_ENV == "development")
   
   def self.raise_exceptions?
     @@raise_exceptions
