@@ -10,12 +10,12 @@ module Workling
       
       # starts the client. 
       def connect
-        #begin
+        begin
           connection = AMQP.start((Workling.config[:amqp_options] ||{}).symbolize_keys)
           @amq = MQ.new connection
-        #rescue
-        #  raise WorklingError.new("couldn't start amq client. if you're running this in a server environment, then make sure the server is evented (ie use thin or evented mongrel, not normal mongrel.)")
-        #end
+        rescue
+          raise WorklingError.new("couldn't start amq client. if you're running this in a server environment, then make sure the server is evented (ie use thin or evented mongrel, not normal mongrel.)")
+        end
       end
       
       # no need for explicit closing. when the event loop
