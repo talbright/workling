@@ -62,7 +62,12 @@ module Workling
     # were interrupted.
     def create
     end
-    
+
+    # override this if you want to set up exception notification
+    def notify_exception(exception, method, options)
+      logger.error "WORKLING ERROR: runner could not invoke #{ self.class }:#{ method } with #{ options.inspect }. error was: #{ exception.inspect }\n #{ exception.backtrace.join("\n") }"
+    end
+
     # takes care of suppressing remote errors but raising Workling::WorklingNotFoundError
     # where appropriate. swallow workling exceptions so that everything behaves like remote code.
     # otherwise StarlingRunner and SpawnRunner would behave too differently to NotRemoteRunner.
@@ -71,8 +76,7 @@ module Workling
         self.send(method, options)
       rescue Exception => e
         raise e if e.kind_of?(Workling::WorklingError)
-        logger.error "WORKLING ERROR: runner could not invoke #{ self.class }:#{ method } with #{ options.inspect }. error was: #{ e.inspect }\n #{ e.backtrace.join("\n") }"
-        notify_exception e, method, options if respond_to?(:notify_exception)
+        notify_exception e, method, options
 
         # reraise after logging. the exception really can't go anywhere in many cases. (spawn traps the exception)
         raise e if Workling.raise_exceptions?
