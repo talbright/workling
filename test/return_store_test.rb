@@ -15,4 +15,10 @@ context "The return store" do
     Workling.return.set(:key, :value)
     Workling.return.get(:key).should.equal :value
   end
+  
+  specify "should return an iterator for a specific key when invoked like this: Workling.return.iterator(key)" do
+    Workling::Return::Store.set(:key, 1)
+    Workling::Return::Store.set(:key, 2)
+    Workling.return.iterator(:key).collect{ |item| item }.should.equal [1, 2]
+  end
 end

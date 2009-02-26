@@ -10,15 +10,15 @@ module Workling
         attr_accessor :sky
         
         def initialize
-          self.sky = {}
+          self.sky = Hash.new([])
         end
         
         def set(key, value)
-          self.sky[key] = value
+          self.sky[key] << value
         end
         
         def get(key)
-          self.sky.delete(key)
+          self.sky[key].shift
         end
       end
     end

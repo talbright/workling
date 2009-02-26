@@ -31,6 +31,11 @@ module Workling
         def get(key)
           raise NotImplementedError.new("get(key) not implemented in #{ self.class }")
         end
+        
+        def iterator(key)
+          Workling::Return::Store::Iterator.new(key)
+        end
+        
       end
     end
   end
