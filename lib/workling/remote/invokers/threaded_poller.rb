@@ -22,10 +22,7 @@ module Workling
           @mutex = Mutex.new
         end      
           
-        def listen                
-          # Allow concurrency for our tasks
-          ActiveRecord::Base.allow_concurrency = true
-
+        def listen
           # Create a thread for each worker.
           Workling::Discovery.discovered.each do |clazz|
             logger.debug("Discovered listener #{clazz}")
@@ -71,10 +68,11 @@ module Workling
             if Workling.config[:listeners].has_key?(clazz.to_s)
               config = Workling.config[:listeners][clazz.to_s].symbolize_keys
               thread_sleep_time = config[:sleep_time] if config.has_key?(:sleep_time)
+              Thread.current.priority = config[:priority] if config.has_key?(:priority)
             end
           end
 
-          hread_sleep_time ||= self.class.sleep_time
+          thread_sleep_time ||= self.class.sleep_time
                 
           # Setup connection to client (one per thread)
           connection = @client_class.new
@@ -85,17 +83,9 @@ module Workling
           while (!Thread.current[:shutdown]) do
             begin
             
-              # Thanks for this Brent! 
-              #
-              #     ...Just a heads up, due to how rails’ MySQL adapter handles this  
-              #     call ‘ActiveRecord::Base.connection.active?’, you’ll need 
-              #     to wrap the code that checks for a connection in in a mutex.
-              #
-              #     ....I noticed this while working with a multi-core machine that 
-              #     was spawning multiple workling threads. Some of my workling 
-              #     threads would hit serious issues at this block of code without 
-              #     the mutex.            
-              #
+              # Wrap code calling ActiveRecord::Base.connection_active? in a
+              # mutex to avoid problem with spawning threads on multi-core
+              # machines running MySQL.
               @mutex.synchronize do 
                 unless ActiveRecord::Base.connection.active?  # Keep MySQL connection alive
                   unless ActiveRecord::Base.connection.reconnect!
