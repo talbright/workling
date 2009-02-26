@@ -98,7 +98,7 @@ module Workling
               # Dispatch and process the messages
               n = dispatch!(connection, clazz)
               logger.debug("Listener thread #{clazz.name} processed #{n.to_s} queue items") if n > 0
-              sleep(self.class.sleep_time) unless n > 0
+              sleep(thread_sleep_time) unless n > 0
             
               # If there is a memcache error, hang for a bit to give it a chance to fire up again
               # and reset the connection.
