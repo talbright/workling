@@ -20,3 +20,18 @@ Rake::RDocTask.new(:rdoc) do |rdoc|
   rdoc.rdoc_files.include('README.markdown')
   rdoc.rdoc_files.include('lib/**/*.rb')
 end
+
+begin
+  require 'jeweler'
+  Jeweler::Tasks.new do |s|
+    s.name = "workling"
+    s.summary = "easily do background work in rails, without commiting to a particular runner. comes with starling, bj and spawn runners."
+    s.email = "nicolas@marchildon.net"
+    s.homepage = "http://github.com/elecnix/workling"
+    s.description = "easily do background work in rails, without commiting to a particular runner. comes with starling, bj and spawn runners."
+    s.authors = ["Rany Keddo"]
+  end
+rescue LoadError
+  puts "Jeweler not available. Install it with: sudo gem install technicalpickles-jeweler -s http://gems.github.com"
+end
+
