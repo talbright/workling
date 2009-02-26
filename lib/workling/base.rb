@@ -37,8 +37,9 @@ module Workling
     # takes care of suppressing remote errors but raising Workling::WorklingNotFoundError
     # where appropriate. swallow workling exceptions so that everything behaves like remote code.
     # otherwise StarlingRunner and SpawnRunner would behave too differently to NotRemoteRunner.
-    def dispatch_to_worker_method(method, options)
+    def dispatch_to_worker_method(method, options = {})
       begin
+        options = default_options.merge(options)
         self.send(method, options)
       rescue Workling::WorklingError => e
         raise e
@@ -53,6 +54,11 @@ module Workling
       end
     end    
 
+    # supply default_options as a hash in classes that inherit Workling::Base
+    def default_options
+      {}
+    end
+  
     # thanks to blaine cook for this suggestion.
     def self.method_missing(method, *args, &block)
       if method.to_s =~ /^asynch?_(.*)/
