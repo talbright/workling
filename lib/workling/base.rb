@@ -1,3 +1,5 @@
+#require 'struct'
+
 #
 #  All worker classes must inherit from this class, and be saved in app/workers. 
 # 
@@ -38,15 +40,19 @@ module Workling
     def dispatch_to_worker_method(method, options)
       begin
         self.send(method, options)
+      rescue Workling::WorklingError => e
+        raise e
       rescue Exception => e
         raise e if e.kind_of? Workling::WorklingError
         logger.error "WORKLING ERROR: runner could not invoke #{ self.class }:#{ method } with #{ options.inspect }. error was: #{ e.class }:#{ e.message }\n #{ e.backtrace.join("\n") }"
+
+        on_error(e) if respond_to?(:on_error)
 
         # reraise after logging. the exception really can't go anywhere in many cases. (spawn traps the exception)
         raise e if Workling.raise_exceptions?
       end
     end    
-  
+
     # thanks to blaine cook for this suggestion.
     def self.method_missing(method, *args, &block)
       if method.to_s =~ /^asynch?_(.*)/
