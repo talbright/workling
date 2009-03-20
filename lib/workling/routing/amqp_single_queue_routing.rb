@@ -13,7 +13,7 @@ module Workling
         @method_name = ARGV[1]
         @queue_name = ARGV[2]
 
-        puts "** single queue routing: #{@queue_name}, #{@method_name}, #{@worker_class}"
+        puts "** single queue routing: #{@queue_name}, #{@method_name}, #{@worker.class}"
       end
 
       # TODO - redo this...
