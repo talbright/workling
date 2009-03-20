@@ -17,7 +17,10 @@ module Workling
     # set the desired invoker. this class grabs work from the job broker and executes it. 
     mattr_accessor :invoker
     @@invoker ||= Workling::Remote::Invokers::ThreadedPoller
-    
+
+    mattr_accessor :routing
+    @@routing ||= Workling::Routing::ClassAndMethodRouting
+
     # retrieve the dispatcher or instantiate it using the defaults
     def self.dispatcher
       @@dispatcher ||= Workling.default_runner

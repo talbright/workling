@@ -9,10 +9,11 @@ require File.dirname(__FILE__) + '/../lib/workling/routing/class_and_method_rout
 
 client = Workling::Remote.dispatcher.client
 invoker = Workling::Remote.invoker
-poller = invoker.new(Workling::Routing::ClassAndMethodRouting.new, client.class)
+routing = Workling::Remote.routing
+poller = invoker.new(routing.new, client.class)
 
 puts '** Rails loaded.'
-puts "** Starting #{ invoker }..."
+puts "** Starting #{ invoker }, #{routing} ..."
 puts '** Use CTRL-C to stop.'
 
 ActiveRecord::Base.logger = Workling::Base.logger
