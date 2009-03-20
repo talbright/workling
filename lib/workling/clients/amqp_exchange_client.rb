@@ -36,10 +36,10 @@ module Workling
 
       # publish message to amq.topic exchange
       # using the specified routing key
-      def request(key, value)
-        data = YAML.dump(value)
+      def request(exchange_name, value)
+        msg = YAML.dump(value)
         exchange = @amq.topic
-        exchange.publish(data, :routing_key => key)
+        exchange.publish(msg, :routing_key => key)
       end
     end
   end
