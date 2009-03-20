@@ -13,7 +13,7 @@ routing = Workling::Remote.routing
 poller = invoker.new(routing.new, client.class)
 
 puts '** Rails loaded.'
-puts "** Starting #{ invoker }, #{routing} ..."
+puts "** Starting #{invoker}, #{routing} ..."
 puts '** Use CTRL-C to stop.'
 
 ActiveRecord::Base.logger = Workling::Base.logger
