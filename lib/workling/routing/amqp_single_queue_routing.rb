@@ -7,13 +7,14 @@ module Workling
   module Routing
     class AmqpSingleQueueRouting
 
-      # CowWorker moo out.queue
+      # CowWorker moo out.queue #
       def initialize
         @worker = ARGV[0].constantize.new
         @method_name = ARGV[1]
         @queue_name = ARGV[2]
+        @routing_key = ARGV[3]
 
-        puts "** single queue routing: #{@queue_name}, #{@method_name}, #{@worker.class}"
+        puts "** single queue routing: queue - #{@queue_name}, routing_key - #{@routing_key}, method - #{@method_name}, worker - #{@worker.class}"
       end
 
       # TODO - redo this...
@@ -25,16 +26,16 @@ module Workling
       def method_name(queue)
         @method_name
       end
-      
-      # returns the routing string, given a class and method. delegating. 
-      def queue_for(clazz, method)
-        AmqpSingleQueueRouting.queue_for(clazz, method)
+
+      def routing_key_for
+        @routing_key
       end
-              
-      # returns the routing string, given a class and method.
-      def self.queue_for(clazz, method)
+
+      # returns the routing string, given a class and method. delegating. 
+      def queue_for(clazz=nil, method=nil)
         @queue_name
       end
+
       
       # returns all routed
       def queue_names
