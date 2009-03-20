@@ -14,7 +14,7 @@ module Workling
         end
         
         #
-        # TODO - how to configure the queue name?
+        # TODO - how to configure the queue name and the routing_key for the binding?
         #  Starts EM loop and sets up subscription callbacks for workers. 
         #
         def listen
@@ -23,10 +23,10 @@ module Workling
               queue_name = "out.queue"
 
               # temp stuff to hook the queues and exchanges up
-              # wildcard routing
+              # wildcard routing - # (match all)
               exch = MQ.topic
               q = MQ.queue(queue_name)
-              q.bind(exch, :key => "*")
+              q.bind(exch, :key => "#")
 
               @client.subscribe(queue_name) do |args|
                 run(queue_name, args)
