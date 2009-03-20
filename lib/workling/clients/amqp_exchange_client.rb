@@ -37,6 +37,7 @@ module Workling
       # publish message to exchange
       # using the specified routing key
       def request(exchange_name, value)
+        key = value.delete(:routing_key)
         msg = YAML.dump(value)
         exchange = @amq.topic(exchange_name)
         exchange.publish(msg, :routing_key => key)
