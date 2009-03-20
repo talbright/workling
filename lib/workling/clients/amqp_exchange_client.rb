@@ -6,7 +6,7 @@ Workling.try_load_an_amqp_client
 #
 module Workling
   module Clients
-    class AmqpTopicClient < Workling::Clients::Base
+    class AmqpExchangeClient < Workling::Clients::Base
       
       # starts the client. 
       def connect
@@ -34,11 +34,11 @@ module Workling
           @amq.queue(key)
       end
 
-      # publish message to amq.topic exchange
+      # publish message to exchange
       # using the specified routing key
       def request(exchange_name, value)
         msg = YAML.dump(value)
-        exchange = @amq.topic
+        exchange = @amq.topic(exchange_name)
         exchange.publish(msg, :routing_key => key)
       end
     end
