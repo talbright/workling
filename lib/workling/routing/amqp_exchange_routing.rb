@@ -24,7 +24,8 @@ module Workling
         ClassAndMethodRouting.queue_for(clazz, method)
       end
 
-      alias :routing_key_for, :queue_for
+      # TODO - these need to be flexible
+      alias :exchange_for, :queue_for
               
       # returns the routing string, given a class and method.
       def self.queue_for(clazz, method)
