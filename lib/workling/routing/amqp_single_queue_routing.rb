@@ -6,13 +6,21 @@ require 'workling/routing/base'
 module Workling
   module Routing
     class AmqpSingleQueueRouting
-          
+
+      # CowWorker moo out.queue
       def initialize
-        @method_name = "moo"
-        @worker = nil
-        @queue_name = "out.queue"
+        @worker = ARGV[0].constantize.new
+        @method_name = ARGV[1]
+        @queue_name = ARGV[2]
+
+        puts "** single queue routing: #{@queue.name}, #{@method_name}, #{@worker.class}"
       end
-      
+
+      # TODO - redo this...
+      def [](x)
+        @worker
+      end
+
       # returns the worker method name, given the routing string. 
       def method_name(queue)
         @method_name
