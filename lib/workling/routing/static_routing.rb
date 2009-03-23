@@ -5,17 +5,18 @@ require 'workling/routing/base'
 #
 module Workling
   module Routing
-    class AmqpSingleQueueRouting
+    class StaticRouting
 
       # ./script/workling_client run -- <worker_class> <worker_method> <routing_key>      
       # ./script/workling_client run -- CowWorker moo "#"
+      # the queue name for this example would be "cow_workers__moo_#" (<worker_class_tableized>__<worker_method>__<routing_key>)
       def initialize
         @worker = ARGV[0].constantize.new
         @method_name = ARGV[1]
         @routing_key = ARGV[2]
         @queue_name = [@worker.class.to_s.tableize, @method_name, @routing_key].join("__")
 
-        puts "** single queue routing: queue - #{@queue_name}, routing_key - #{@routing_key}, method - #{@method_name}, worker - #{@worker.class}"
+        puts "** static routing: queue - #{@queue_name}, routing_key - #{@routing_key}, method - #{@method_name}, worker - #{@worker.class}"
       end
 
       # TODO - redo this...
