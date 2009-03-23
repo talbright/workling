@@ -1,13 +1,14 @@
 require 'workling/routing/base'
 
 #
-#  Holds a single route
+#  Holds a single route for a standalone dedicated worker (if you want more worker processes, run more workers)
 #
 module Workling
   module Routing
     class AmqpSingleQueueRouting
 
-      # CowWorker moo out.queue #
+      # ./script/workling_client run -- <worker_class> <worker_method> <routing_key>      
+      # ./script/workling_client run -- CowWorker moo "#"
       def initialize
         @worker = ARGV[0].constantize.new
         @method_name = ARGV[1]
@@ -31,7 +32,8 @@ module Workling
         @routing_key
       end
 
-      # returns the routing string, given a class and method. delegating. 
+      # returns the routing string, given a class and method. delegating.
+      # TODO - we can check for consistency here with clazz and methods vs. current configuration of this single route
       def queue_for(clazz=nil, method=nil)
         @queue_name
       end
