@@ -11,8 +11,8 @@ module Workling
       def initialize
         @worker = ARGV[0].constantize.new
         @method_name = ARGV[1]
-        @queue_name = ARGV[2]
-        @routing_key = ARGV[3]
+        @routing_key = ARGV[2]
+        @queue_name = [@worker.class.to_s.tableize, @method_name, @routing_key].join("__")
 
         puts "** single queue routing: queue - #{@queue_name}, routing_key - #{@routing_key}, method - #{@method_name}, worker - #{@worker.class}"
       end
@@ -35,8 +35,7 @@ module Workling
       def queue_for(clazz=nil, method=nil)
         @queue_name
       end
-
-      
+   
       # returns all routed
       def queue_names
         [@queue_name]
