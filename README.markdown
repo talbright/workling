@@ -1,3 +1,9 @@
+# digitalhobbit/workling Fork Notes
+
+This particular Workling fork provides an SQS Client. See instructions below.
+
+----------------------------
+
 # Workling
 
 Workling gives your Rails App a simple API that you can use to make code run in the background, outside of the your request. 
@@ -214,6 +220,56 @@ Install the Bj plugin like this:
 Workling will now automatically detect and use Bj, unless you have also installed Starling. If you have Starling installed, you need to tell Workling to use Bj by putting this in your environment.rb: 
 
     Workling::Remote.dispatcher = Workling::Remote::Runners::BackgroundjobRunner.new
+
+# Using SQS
+
+If you're running on Amazon EC2, you may want to leverage SQS (Simple Queue Service) to benefit from this highly scalable queue implementation without having to install any software.
+
+The SQS Client namespaces queues with an optional prefix as well as with the Rails environment, allowing us to distinguish between production and staging queues, for example. Queues are automatically created the first time they are accessed.
+
+Configuring Workling to use SQS is very straightforward and requires no additional software, with the exception of the RightAws gem.
+
+## Installing the SQS Client
+
+Install the RightAws gem:
+
+    1. sudo gem install right_aws
+
+Configure Workling to use the SqsClient. Add this to your environment:
+
+    Workling::Remote.dispatcher = Workling::Remote::Runners::ClientRunner.new
+    Workling::Remote.dispatcher.client = Workling::Clients::SqsClient.new
+
+Add your AWS key id and secret key to workling.yml:
+
+    production:
+      sqs_options:
+        aws_access_key_id: <your AWS access key id>
+        aws_secret_access_key: <your AWS secret access key>
+
+You can optionally override the following settings, although the defaults
+will likely be sufficient:
+
+        # Queue names consist of an optional prefix, followed by the environment
+        # and the name of the key.
+        prefix: foo_
+
+        # The number of SQS messages to retrieve at once. The maximum and default
+        # value is 10.
+        messages_per_req: 10
+
+        # The SQS visibility timeout for retrieved messages. Defaults to 30 seconds.
+        visibility_timeout: 30
+
+Now start the Workling Client:
+
+    1 ./script/workling_client start
+    
+You're good.
+
+## Limitations
+
+SQS messages need to be explicitly deleted from the queue. Otherwise, they will reappear after the visibility timeout. The SQS client currently deletes a message immediately before handing it to a worker, assuming that it will be processed successfully. A more robust implementation (which would require additional hooks in the Workling framework) would be to defer the deletion until after the message was successfully processed, allowing us to retry the message processing in case of an error.
 
 # Progress indicators and return stores
 
