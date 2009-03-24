@@ -5,6 +5,26 @@ require 'right_aws'
 #
 #  An SQS client
 #
+# Requires the following configuration in workling.yml:
+#
+# production:
+#   sqs_options:
+#     aws_access_key_id: <your AWS access key id>
+#     aws_secret_access_key: <your AWS secret access key>
+#
+# You can also add the following optional parameters:
+#
+#     # Queue names consist of an optional prefix, followed by the environment
+#     # and the name of the key.
+#     prefix: foo_
+#
+#     # The number of SQS messages to retrieve at once. The maximum and default
+#     # value is 10.
+#     messages_per_req: 5
+#
+#     # The SQS visibility timeout for retrieved messages. Defaults to 30 seconds.
+#     visibility_timeout: 15
+#   
 module Workling
   module Clients
     class SqsClient < Workling::Clients::Base
