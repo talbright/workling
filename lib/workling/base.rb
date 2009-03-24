@@ -44,6 +44,8 @@ module Workling
 
         # reraise after logging. the exception really can't go anywhere in many cases. (spawn traps the exception)
         raise e if Workling.raise_exceptions?
+      ensure
+        logger.flush
       end
     end    
   
