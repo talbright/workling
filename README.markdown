@@ -1,8 +1,6 @@
-# digitalhobbit/workling Fork Notes
+# *digitalhobbit/workling Fork Notes*
 
-This particular Workling fork provides an SQS Client. See instructions below.
-
-----------------------------
+*This particular Workling fork provides an SQS Client. See instructions below.*
 
 # Workling
 
