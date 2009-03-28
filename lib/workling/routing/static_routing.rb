@@ -1,7 +1,7 @@
 require 'workling/routing/base'
 
 #
-#  Holds a single route for a standalone dedicated worker (if you want more worker processes, run more workers)
+#  Holds a single route for a dedicated worker (if you want more worker processes, run more workers)
 #
 module Workling
   module Routing
@@ -10,10 +10,10 @@ module Workling
       # ./script/workling_client run -- <worker_class> <worker_method> <routing_key>      
       # ./script/workling_client run -- CowWorker moo "#"
       # the queue name for this example would be "cow_workers__moo_#" (<worker_class_tableized>__<worker_method>__<routing_key>)
-      def initialize
-        @worker = ARGV[0].constantize.new
-        @method_name = ARGV[1]
-        @routing_key = ARGV[2]
+      def initialize(*args)
+        @worker = args[0].constantize.new
+        @method_name = args[1]
+        @routing_key = args[2]
         @queue_name = [@worker.class.to_s.tableize, @method_name, @routing_key].join("__")
 
         puts "** static routing: queue - #{@queue_name}, routing_key - #{@routing_key}, method - #{@method_name}, worker - #{@worker.class}"
@@ -25,7 +25,7 @@ module Workling
       end
 
       # returns the worker method name, given the routing string. 
-      def method_name(queue)
+      def method_name(queue=nil)
         @method_name
       end
 

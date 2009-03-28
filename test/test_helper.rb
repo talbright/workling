@@ -24,6 +24,7 @@ Workling.try_load_a_memcache_client
 
 require "workling/discovery"
 require "workling/routing/class_and_method_routing"
+require "workling/routing/static_routing"
 require "workling/remote/invokers/basic_poller"
 require "workling/remote/invokers/threaded_poller"
 require "workling/remote/invokers/eventmachine_subscriber"
