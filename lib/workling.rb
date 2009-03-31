@@ -89,26 +89,13 @@ module Workling
     Object.const_defined? "Bj"
   end
   
-  # Tries to load one of the following:
-  #   mperham-memcache-client   => current version
-  #   fivefuns-memcache-client  => bug fixes fork of the original memcache-client
-  #   memcache-client           => original memcache-client... has some bugs
+  # Attempts to load the memcache-client gem
   def self.try_load_a_memcache_client
     begin
-      begin
-        gem 'mperham-memcache-client'
-      rescue Gem::LoadError
-        gem 'fiveruns-memcache-client'
-      end
-
+      gem 'memcache-client'
       require 'memcache'
     rescue Gem::LoadError
-      begin
-        gem 'memcache-client'
-        require 'memcache'
-      rescue Gem::LoadError
-        Workling::Base.logger.info "WORKLING: couldn't find a memcache client - you need one for the starling runner. "
-      end
+      Workling::Base.logger.info "WORKLING: couldn't find memcache-client. Install: \"gem install memcache-client\". "
     end
   end
   
