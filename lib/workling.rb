@@ -121,15 +121,12 @@ module Workling
   #  returns a config hash. reads RAILS_ROOT/config/workling.yml
   #
   def self.config
-    begin
-      config_path = File.join(RAILS_ROOT, 'config', 'workling.yml')
-      @@config ||=  YAML.load_file(config_path)[RAILS_ENV || 'development'].symbolize_keys
-      @@config[:memcache_options].symbolize_keys! if @@config[:memcache_options]
-      @@config 
-    rescue
-       # config files could not be read correctly
-      raise ConfigurationError.new
-    end
+    config_path = File.join(RAILS_ROOT, 'config', 'workling.yml')
+    return nil unless File.exists?(config_path)
+    
+    @@config ||= YAML.load_file(config_path)[RAILS_ENV || 'development'].symbolize_keys
+    @@config[:memcache_options].symbolize_keys! if @@config[:memcache_options]
+    @@config
   end
   
   #
