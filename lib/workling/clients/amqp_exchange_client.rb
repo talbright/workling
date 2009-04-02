@@ -23,8 +23,11 @@ module Workling
       
       # subscribe to a queue
       def subscribe(key)
-        @amq.queue(key).subscribe do |data|
-          value = YAML.load(data)
+        @amq.queue(key).subscribe do |header, body|
+
+          puts "***** received msg with header - #{header.inspect}"
+
+          value = YAML.load(body)
           yield value
         end
       end
@@ -40,7 +43,7 @@ module Workling
         key = value.delete(:routing_key)
         msg = YAML.dump(value)
         exchange = @amq.topic(exchange_name)
-        exchange.publish(msg, :routing_key => key)
+        exchange.publish(msg, :routing_key => key, :x-custom_header => "this is a test")
       end
     end
   end
