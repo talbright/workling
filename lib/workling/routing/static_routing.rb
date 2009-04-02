@@ -19,7 +19,7 @@ module Workling
         # so routing[x] hash access works as expected
         self.default = @worker
 
-        logger.debug "** static routing: queue - #{@queue_name}, routing_key - #{@routing_key}, method - #{@method_name}, worker - #{@worker.class}"
+        puts "** static routing: queue - #{@queue_name}, routing_key - #{@routing_key}, method - #{@method_name}, worker - #{@worker.class}"
       end
 
       # returns the worker method name, given the routing string. 
