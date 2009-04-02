@@ -43,7 +43,7 @@ module Workling
         key = value.delete(:routing_key)
         msg = YAML.dump(value)
         exchange = @amq.topic(exchange_name)
-        exchange.publish(msg, :routing_key => key, :x-custom_header => "this is a test")
+        exchange.publish(msg, :routing_key => key, "x-custom-header" => "this is a test")
       end
     end
   end
