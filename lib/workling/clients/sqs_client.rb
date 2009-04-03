@@ -35,6 +35,7 @@ module Workling
       # in a single request.
       DEFAULT_MESSAGES_PER_REQ = 10
       DEFAULT_VISIBILITY_TIMEOUT = 30
+      DEFAULT_VISIBILITY_RESERVE = 10
       
       # Mainly exposed for testing purposes
       attr_reader :sqs_options
@@ -54,6 +55,7 @@ module Workling
         # Optional settings
         @messages_per_req = @sqs_options['messages_per_req'] || DEFAULT_MESSAGES_PER_REQ
         @visibility_timeout = @sqs_options['visibility_timeout'] || DEFAULT_VISIBILITY_TIMEOUT
+        @visibility_reserve = @sqs_options['visibility_reserve'] || DEFAULT_VISIBILITY_RESERVE
         
         begin
           @sqs = RightAws::SqsGen2.new(
@@ -89,17 +91,28 @@ module Workling
             nil
           else
             msg = buffer.shift
-            # Need to wrap in HashWithIndifferentAccess, as JSON serialization
-            # loses symbol keys.
-            parsed_msg = HashWithIndifferentAccess.new(JSON.parse(msg.body))
+
+            # We need to protect against the case that processing one of the
+            # messages in the buffer took so much time that the visibility
+            # timeout for the remaining messages has expired. To be on the
+            # safe side (since we need to leave enough time to delete the
+            # message), we drop it if more than half of the visibility timeout
+            # has elapsed.
+            if msg.received_at < (Time.now - (@visibility_timeout - @visibility_reserve))
+              nil
+            else
+              # Need to wrap in HashWithIndifferentAccess, as JSON serialization
+              # loses symbol keys.
+              parsed_msg = HashWithIndifferentAccess.new(JSON.parse(msg.body))
             
-            # Delete the msg from SQS, so we don't re-retrieve it after the
-            # visibility timeout. Ideally we would defer deleting a msg until
-            # after Workling has successfully processed it, but it currently
-            # doesn't provide the necessary hooks for this.
-            msg.delete
+              # Delete the msg from SQS, so we don't re-retrieve it after the
+              # visibility timeout. Ideally we would defer deleting a msg until
+              # after Workling has successfully processed it, but it currently
+              # doesn't provide the necessary hooks for this.
+              msg.delete
             
-            parsed_msg
+              parsed_msg
+            end
           end
 
         rescue => e

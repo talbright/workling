@@ -53,8 +53,8 @@ context "The SQS client" do
 
     specify "should retrieve messages from correct queue and return first one" do
       msgs = [
-        mock('msg1', :body => '{"foo":"bar", "num":42}', :delete => nil),
-        stub('msg2', :body => '{"foo":"bar2", "num":99}', :delete => nil)
+        mock('msg1', :body => '{"foo":"bar", "num":42}', :received_at => Time.now, :delete => nil),
+        mock('msg2', :body => '{"foo":"bar2", "num":99}', :received_at => Time.now, :delete => nil)
       ]
       queue = mock('queue')
       queue.expects(:receive_messages).with(10, 30).returns(msgs)
@@ -63,8 +63,29 @@ context "The SQS client" do
       msg = @client.retrieve('my_key')
       msg[:foo].should == 'bar'
       msg[:num].should == 42
+      
+      msg = @client.retrieve('my_key')
+      msg[:foo].should == 'bar2'
+      msg[:num].should == 99
     end
 
+    specify "should drop messages if close to the visibility timeout" do
+      msgs = [
+        mock('msg1', :body => '{"foo":"bar", "num":42}', :received_at => Time.now - 15, :delete => nil),
+        stub('msg2', :body => '{"foo":"bar2", "num":99}', :received_at => Time.now - 28, :delete => nil)
+      ]
+      queue = mock('queue')
+      queue.expects(:receive_messages).with(10, 30).returns(msgs)
+      @client.expects(:queue_for_key).with('my_key').returns(queue)
+      
+      msg = @client.retrieve('my_key')
+      msg[:foo].should == 'bar'
+      msg[:num].should == 42
+      
+      msg = @client.retrieve('my_key')
+      msg.should == nil
+    end
+    
   end
   
   context "when generating queue names" do
