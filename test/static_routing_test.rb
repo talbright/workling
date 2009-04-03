@@ -41,3 +41,10 @@ context "static routing" do
     routing.queue_names.should.equal ["utils__echo__#"]
   end  
 end
+
+context "static routing with explicit queue name" do
+  specify "should return the correct queue name" do
+    routing = Workling::Routing::StaticRouting.new("Util", "echo", "#", "my.queue.name")
+    routing.queue_for.should.equal "my.queue.name"
+  end
+end

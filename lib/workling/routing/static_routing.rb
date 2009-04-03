@@ -7,14 +7,20 @@ module Workling
   module Routing
     class StaticRouting < Base
 
+      #
       # ./script/workling_client run -- <worker_class> <worker_method> <routing_key>      
-      # ./script/workling_client run -- CowWorker moo "#"
-      # the queue name for this example would be "cow_workers__moo_#" (<worker_class_tableized>__<worker_method>__<routing_key>)
+      # ./script/workling_client run -- <worker_class> <worker_method> <routing_key> <queue_name>
+      #
       def initialize(*args)
         @worker = args[0].constantize.new
         @method_name = args[1]
         @routing_key = args[2]
-        @queue_name = [@worker.class.to_s.tableize, @method_name, @routing_key].join("__")
+
+        if(args.size==4)
+          @queue_name = args[3]
+        else
+          @queue_name = [@worker.class.to_s.tableize, @method_name, @routing_key].join("__")
+        end
 
         # so routing[x] hash access works as expected
         self.default = @worker
