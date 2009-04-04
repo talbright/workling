@@ -17,15 +17,14 @@ module Workling
 
     # set the desired invoker. this class grabs work from the job broker and executes it.
     mattr_accessor :invoker
-    
+    @@invoker ||= self.select_invoker
+
+    mattr_accessor :routing
+    @@routing ||= Workling::Routing::ClassAndMethodRouting
+
     # retrieve the dispatcher or instantiate it using the defaults
     def self.dispatcher
       @@dispatcher ||= Workling.default_runner
-    end
-
-    # retrieve the invoker or instantiate one based on whats in workling.yml
-    def self.invoker
-      @@invoker ||= self.select_invoker
     end
     
     # generates a unique identifier for this particular job. 

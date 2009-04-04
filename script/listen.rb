@@ -6,10 +6,13 @@ require File.dirname(__FILE__) + '/../lib/workling/routing/class_and_method_rout
 
 client = Workling::Remote.dispatcher.client
 invoker = Workling::Remote.invoker
-poller = invoker.new(Workling::Routing::ClassAndMethodRouting.new, client.class)
+routing = Workling::Remote.routing
+
+# TODO - must be a better way of passing in ARGV here...
+poller = invoker.new(routing.new(ARGV[0], ARGV[1], ARGV[2], ARGV[3]), client.class)
 
 puts '** Rails loaded.'
-puts "** Starting #{ invoker }..."
+puts "** Starting #{invoker}, #{routing} ..."
 puts '** Use CTRL-C to stop.'
 
 if defined?(ActiveRecord::Base)

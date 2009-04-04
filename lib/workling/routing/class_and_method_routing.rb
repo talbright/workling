@@ -8,7 +8,7 @@ module Workling
     class ClassAndMethodRouting < Base
           
       # initializes and builds routing hash. 
-      def initialize
+      def initialize(*args)
         super
 
         build

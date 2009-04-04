@@ -437,7 +437,7 @@ That's it! We now have a more effective Invoker.
 
 The following people contributed code to workling so far. Many thanks :) If I forgot anybody, I aplogise. Just drop me a note and I'll add you to the project so that you can amend this!
 
-Anybody who contributes fixes (with tests), or new functionality (whith tests) which is pulled into the main project, will also be be added to the project.
+Anybody who contributes fixes (with tests), or new functionality (with tests) which is pulled into the main project, will also be be added to the project.
 
 * Andrew Carter (ascarter)
 * Chris Gaffney (gaffneyc)

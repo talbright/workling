@@ -3,3 +3,4 @@ pkg
 # Metadata
 .DS_Store
 *.*.swp
+.idea
