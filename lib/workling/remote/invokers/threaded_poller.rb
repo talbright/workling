@@ -113,12 +113,12 @@ module Workling
               logger.debug("Listener thread #{clazz.name} processed #{n.to_s} queue items") if n > 0
               sleep(thread_sleep_time) unless n > 0
             
-              # If there is a memcache error, hang for a bit to give it a chance to fire up again
-              # and reset the connection.
-              rescue Workling::WorklingConnectionError
-                logger.warn("Listener thread #{clazz.name} failed to connect. Resetting connection.")
-                sleep(self.class.reset_time)
-                connection.reset
+            # If there is a memcache error, hang for a bit to give it a chance to fire up again
+            # and reset the connection.
+            rescue Workling::WorklingConnectionError
+              logger.warn("Listener thread #{clazz.name} failed to connect. Resetting connection.")
+              sleep(self.class.reset_time)
+              connection.reset
             end
           end
         
@@ -139,7 +139,7 @@ module Workling
                 logger.debug("Calling #{handler.class.to_s}\##{method_name}(#{result.inspect})")
                 handler.dispatch_to_worker_method(method_name, result)
               end
-            rescue MemCache::MemCacheError => e
+            rescue Workling::WorklingError => e
               logger.error("FAILED to connect with queue #{ queue }: #{ e } }")
               raise e
             end

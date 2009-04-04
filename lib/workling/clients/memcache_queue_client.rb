@@ -56,7 +56,7 @@ module Workling
           get(key)
         rescue MemCache::MemCacheError => e
           # failed to enqueue, raise a workling error so that it propagates upwards
-          raise Workling::WorklingError.new("#{e.class.to_s} - #{e.message}")        
+          raise Workling::WorklingConnectionError.new("#{e.class.to_s} - #{e.message}")        
         end
       end
             

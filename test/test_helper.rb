@@ -10,6 +10,7 @@ require 'active_record'
 
 require 'test/spec'
 require 'mocha'
+begin; require 'redgreen'; rescue; end
 
 $:.unshift plugin_lib, plugin_test
 
@@ -28,6 +29,7 @@ require "workling/discovery"
 require "workling/routing/class_and_method_routing"
 require "workling/remote/invokers/basic_poller"
 require "workling/remote/invokers/threaded_poller"
+require "workling/remote/invokers/thread_pool_poller"
 require "workling/remote/invokers/eventmachine_subscriber"
 require "workling/rudeq/poller"
 require "workling/remote"
@@ -49,3 +51,6 @@ require "runners/thread_runner"
 Workling.load_path = ["#{ plugin_root }/test/workers"]
 Workling::Return::Store.instance = Workling::Return::Store::MemoryReturnStore.new
 Workling::Discovery.discover!
+
+# make this behave like production code
+Workling.raise_exceptions = false

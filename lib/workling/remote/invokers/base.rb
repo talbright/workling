@@ -3,7 +3,7 @@
 #
 #      1. grabbing work off a job broker (such as a starling or rabbitmq server).
 #      2. routing (mapping) that work onto the correct worker method. 
-#      3.invoking the worker method, passing any arguments that came off the broker.
+#      3. invoking the worker method, passing any arguments that came off the broker.
 #
 #   Invokers should implement their own concurrency strategies. For example, 
 #   The there is a ThreadedPoller which starts a thread for each Worker class.

@@ -49,10 +49,10 @@ module Workling
   end
 
   mattr_accessor :load_path
-  @@load_path = [ File.expand_path(path('app', 'workers')) ]
+<<@@load_path = [ File.expand_path(path('app', 'workers')) ]
   
-  VERSION = "0.4.2.2"
-  
+  VERSION = "0.4.2.3"
+==
   #
   # determine the runner to use if nothing is specifically set. workling will try to detect
   # starling, spawn, or bj, in that order. if none of these are found, notremoterunner will
@@ -119,19 +119,13 @@ module Workling
     Object.const_defined? "Bj"
   end
   
-  # tries to load fiveruns-memcache-client. if this isn't found, 
-  # memcache-client is searched for. if that isn't found, don't do anything. 
+  # Attempts to load the memcache-client gem
   def self.try_load_a_memcache_client
     begin
-      gem 'fiveruns-memcache-client'
+      gem 'memcache-client'
       require 'memcache'
     rescue Gem::LoadError
-      begin
-        gem 'memcache-client'
-        require 'memcache'
-      rescue Gem::LoadError
-        Workling::Base.logger.info "WORKLING: couldn't find a memcache client - you need one for the starling runner. "
-      end
+      Workling::Base.logger.info "WORKLING: couldn't find memcache-client. Install: \"gem install memcache-client\". "
     end
   end
   
@@ -151,6 +145,8 @@ module Workling
   #  returns a config hash. reads ./config/workling.yml
   #
   def self.config
+    return @@config if defined?(@@config) && @@config
+
     config_path = File.join(RAILS_ROOT, 'config', 'workling.yml')
     return nil unless File.exists?(config_path)
     
