@@ -31,6 +31,7 @@ module Workling
         "config/workling.yml could not be loaded. check out README.markdown to see what this file should contain. "
     end
   end
+<<<<<<< HEAD:lib/workling.rb
   
   def self.path(*args)
     if defined?(RAILS_ROOT)
@@ -49,10 +50,10 @@ module Workling
   end
 
   mattr_accessor :load_path
-<<@@load_path = [ File.expand_path(path('app', 'workers')) ]
+  @@load_path = [ File.expand_path(path('app', 'workers')) ]
   
   VERSION = "0.4.2.3"
-==
+
   #
   # determine the runner to use if nothing is specifically set. workling will try to detect
   # starling, spawn, or bj, in that order. if none of these are found, notremoterunner will
@@ -140,7 +141,22 @@ module Workling
       )
     end
   end
-  
+
+  # attempts to load xmpp4r library and writes out descriptive error message if not present
+  def self.try_load_xmpp4r
+    begin
+      gem "xmpp4r"
+      require 'xmpp4r'
+      require "xmpp4r/pubsub"
+      require "xmpp4r/pubsub/helper/servicehelper.rb"
+      require "xmpp4r/pubsub/helper/nodebrowser.rb"
+      require "xmpp4r/pubsub/helper/nodehelper.rb"
+    rescue Exception => e
+      raise WorklingError.new("Couldnt load the XMPP library. check that you have the xmpp4r gem installed")
+    end
+  end
+
+
   #
   #  returns a config hash. reads ./config/workling.yml
   #

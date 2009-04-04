@@ -16,7 +16,7 @@ module Workling
       
       # returns the worker method name, given the routing string. 
       def method_name(queue)
-        queue.split("__").last
+        self[queue].method_for(queue)
       end
       
       # returns the routing string, given a class and method. delegating. 
@@ -26,7 +26,9 @@ module Workling
               
       # returns the routing string, given a class and method.
       def self.queue_for(clazz, method)
-        "#{ clazz.to_s.tableize }/#{ method }".split("/").join("__") # Don't split with : because it messes up memcache stats
+        # this is lifted from the Rails constantize method
+        clazz = Object.module_eval("::#{clazz}") unless clazz.is_a?(Class)
+        clazz.queue_for method
       end
       
       # returns all routed
@@ -38,18 +40,18 @@ module Workling
       def queue_names_routing_class(clazz)
         self.select { |x, y|  y.is_a?(clazz) }.map { |x, y| x }
       end
-      
+
       private
         def build
           Workling::Discovery.discovered.each do |clazz|
             methods = clazz.public_instance_methods(false)
             methods.each do |method|
               next if method == 'create'  # Skip the create method
-              queue =  queue_for(clazz, method)
+              queue = queue_for(clazz, method)
               self[queue] = clazz.new
-            end   
-          end     
-        end       
+            end
+          end
+        end
     end
   end
 end

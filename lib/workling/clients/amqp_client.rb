@@ -41,7 +41,7 @@ module Workling
       # subscribe to a queue
       def subscribe(key)
         @amq.queue(key, @options).subscribe(@options) do |value|
-          yield Marshal.load(value, :subscribe)
+          yield Marshal.load(value, :subscribe) rescue value
         end
       end
       

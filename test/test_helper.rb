@@ -21,6 +21,7 @@ require "mocks/spawn"
 require "mocks/logger"
 require "mocks/rude_queue"
 require "workling"
+require "workling_server"
 require "workling/base"
 
 Workling.try_load_a_memcache_client
@@ -49,7 +50,7 @@ require "clients/memory_queue_client"
 require "runners/thread_runner"
 
 # worklings are in here.
-Workling.load_path = ["#{ plugin_root }/test/workers"]
+Workling.load_path = ["#{ plugin_root }/test/workers/**/*.rb"]
 Workling::Return::Store.instance = Workling::Return::Store::MemoryReturnStore.new
 Workling::Discovery.discover!
 
