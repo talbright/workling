@@ -35,7 +35,10 @@ module Workling
           logger.debug("Reaped listener threads. ")
         
           # Clean up all the connections.
-          ActiveRecord::Base.verify_active_connections!
+          if defined?(ActiveRecord::Base)
+            ActiveRecord::Base.verify_active_connections!
+          end
+
           logger.debug("Cleaned up connection: out!")
         end
       
@@ -83,14 +86,24 @@ module Workling
           while (!Thread.current[:shutdown]) do
             begin
             
-              # Wrap code calling ActiveRecord::Base.connection_active? in a
-              # mutex to avoid problem with spawning threads on multi-core
-              # machines running MySQL.
-              @mutex.synchronize do 
-                unless ActiveRecord::Base.connection.active?  # Keep MySQL connection alive
-                  unless ActiveRecord::Base.connection.reconnect!
-                    logger.fatal("Failed - Database not available!")
-                    break
+              # Thanks for this Brent! 
+              #
+              #     ...Just a heads up, due to how rails’ MySQL adapter handles this  
+              #     call ‘ActiveRecord::Base.connection.active?’, you’ll need 
+              #     to wrap the code that checks for a connection in in a mutex.
+              #
+              #     ....I noticed this while working with a multi-core machine that 
+              #     was spawning multiple workling threads. Some of my workling 
+              #     threads would hit serious issues at this block of code without 
+              #     the mutex.            
+              #
+              if defined?(ActiveRecord::Base)
+                @mutex.synchronize do 
+                  unless ActiveRecord::Base.connection.active?  # Keep MySQL connection alive
+                    unless ActiveRecord::Base.connection.reconnect!
+                      logger.fatal("Failed - Database not available!")
+                      break
+                    end
                   end
                 end
               end

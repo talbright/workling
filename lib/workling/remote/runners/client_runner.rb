@@ -1,4 +1,5 @@
 require 'workling/remote/runners/base'
+require 'workling/routing/class_and_method_routing'
 require 'workling/clients/memcache_queue_client'
 
 #

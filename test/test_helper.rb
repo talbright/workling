@@ -3,8 +3,11 @@ plugin_root = File.join plugin_test, '..'
 plugin_lib = File.join plugin_root, 'lib'
 
 require 'rubygems'
-require 'active_support'
+#require 'active_support'
+
+gem 'activerecord'
 require 'active_record'
+
 require 'test/spec'
 require 'mocha'
 
@@ -12,8 +15,6 @@ $:.unshift plugin_lib, plugin_test
 
 RAILS_ENV = "test"
 RAILS_ROOT = File.dirname(__FILE__) + "/.." # fake the rails root directory.
-RAILS_DEFAULT_LOGGER = Logger.new(STDOUT)
-RAILS_DEFAULT_LOGGER.level = Logger::WARN
 
 require "mocks/spawn"
 require "mocks/logger"
