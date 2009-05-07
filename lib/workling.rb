@@ -51,7 +51,7 @@ module Workling
   mattr_accessor :load_path
   @@load_path = [ File.expand_path(path('app', 'workers')) ]
 
-  VERSION = "0.4.2.3"
+  VERSION = "0.4.9"
 
   #
   # determine the runner to use if nothing is specifically set. workling will try to detect
