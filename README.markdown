@@ -56,13 +56,55 @@ Calling `async_my_method` on the worker class will trigger background work. This
 
 If an exception is raised in your Worker, it will not be propagated to the calling code by workling. This is because the code is called asynchronously, meaning that exceptions may be raised after the calling code has already returned. If you need your calling code to handle exceptional situations, you have to pass the error into the return store. 
 
-Workling does log all exceptions that propagate out of the worker methods. 
+Workling does log all exceptions that propagate out of the worker methods.
+
+Furthermore you can provide custom exception handling by defining the 
+  notify_exception(exception, method, options)
+in your worker class. If it is present it will be called for every exception
 
 ## Logging with Workling
 
 `RAILS_DEFAULT_LOGGER` is available in all workers. Workers also have a logger method which returns the default logger, so you can log like this: 
 
     logger.info("about to moo.")
+
+## Running Workling (in production)
+
+The workling daemon can be invoked using the command
+  script/workling_client run
+This will make it run in the development environment, with the default settings unless overridden in your development.rb (see below)
+
+For production use the script takes a couple of options
+  script/workling_client <daemon_options> -- <app_options>
+
+The daemon_options configure the runtime environment of the daemon and can be one of the following options:
+  --app-name APP_NAME
+  --monitor
+  --ontop
+The app-name option is useful if you want to run worklings for multiple Rails apps on the same machine. Each app will need to have its unique name.
+The monitor option should not be specified if you are using Monit or god.
+
+The app_options allow you to specify the configuration of the workling interfaces via the command line:
+--client CLIENT
+--invoker INVOKER
+--routing ROUTING
+--load-path LOADPATH
+--environment ENVIRONMENT
+
+The client, invoker and routing params take the full class names of the relevant plugin classes. load-path allows overriding where workling looks for workers and environment should be self explanatory.
+
+The following is a sample of how workling_client can be used with god and AMQP:
+
+  God.watch do |w|
+    script = "#{RAILS_ROOT}/script/workling_client"
+    w.name = "myapp-workling"
+    w.start = "#{script} start -a myapp-workling -- -e production -i Workling::Remote::Invokers::EventmachineSubscriber -c Workling::Clients::AmqpClient"
+    w.restart = "#{script} restart -a myapp-workling -- -e production -i Workling::Remote::Invokers::EventmachineSubscriber -c Workling::Clients::AmqpClient"
+    w.stop = "#{script} stop -a myapp-workling"
+
+    w.pid_file = "#{RAILS_ROOT}/log/myapp-workling.pid"
+  end
+
 
 ## What should I know about the Spawn Runner?
 
@@ -75,9 +117,7 @@ You'll see that this executes pretty much instantly. Run 'top' in another termin
 
 You cannot run your workers on a remote machine or cluster them with spawn. You also have no persistence: if you've fired of a lot of work and everything dies, there's no way of picking up where you left off. 
 
-# Using the Starling runner
 
-If you want cross machine jobs with low latency and a low memory overhead, you might want to look into using the Starling Runner. 
 
 ## Installing Starling
 
@@ -214,6 +254,47 @@ Install the Bj plugin like this:
 Workling will now automatically detect and use Bj, unless you have also installed Starling. If you have Starling installed, you need to tell Workling to use Bj by putting this in your environment.rb: 
 
     Workling::Remote.dispatcher = Workling::Remote::Runners::BackgroundjobRunner.new
+
+
+# Using XMPP listener
+
+NOTE: this code is highly experimental. It was implemented in order to facilitate the async communication between multiple Rails app running in the same domain/datacentre. However it is no longer in production use, since the setup proved to be both too complex to maintain and quite unreliable. The AMQP support turned out to be much more appropriate.
+I'm putting this here as a starting base for someone interested in using XMPP in such a way. Contact me at derfred on github if you want pointers.
+
+this client requires the xmpp4r gem
+
+in the config/environments/development.rb file (or production.rb etc)
+
+  Workling::Remote::Runners::ClientRunner.client = Workling::Clients::XmppClient.new
+  Workling::Remote.dispatcher = Workling::Remote::Runners::ClientRunner.new        # dont use the standard runner
+  Workling::Remote.invoker = Workling::Remote::Invokers::LoopedSubscriber          # does not work with the EventmachineSubscriber Invoker
+
+furthermore in the workling.yml file you need to set up the server details for your XMPP server
+
+  development:
+    listens_on: "localhost:22122"
+    jabber_id: "sub@localhost/laptop"
+    jabber_server: "localhost"
+    jabber_password: "sub"
+    jabber_service: "pubsub.derfredtop.local"
+
+for details on how to configure your XMPP server (ejabberd) check out the following howto:
+
+  http://keoko.wordpress.com/2008/12/17/xmpp-pubsub-with-ejabberd-and-xmpp4r/
+
+
+finally you need to expose your worker methods to XMPP nodes like so:
+
+  class NotificationWorker < Workling::Base
+
+    expose :receive_notification, :as => "/home/localhost/pub/sub"
+
+    def receive_notification(input)
+      # something here
+    end
+
+  end
+
 
 # Progress indicators and return stores
 
@@ -360,6 +441,8 @@ In our case, we need to start an EM loop around `listen`. This is because the Ru
 Next, inside of `listen`, we need to iterate through all defined routes. There is a route for each worker method you defined in your application. The routes double as queue names. For this, you can use the helper method `routes`. Now we attach a callback to each queue. We can use the helper method `run`, which executes the worker method associated with the queue, passing along any supplied arguments. 
 
 That's it! We now have a more effective Invoker.
+
+
 
 # Contributors
 
