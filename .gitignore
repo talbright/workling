@@ -4,3 +4,4 @@ pkg
 .DS_Store
 *.*.swp
 .idea
+test.log

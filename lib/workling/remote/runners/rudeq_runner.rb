@@ -9,7 +9,7 @@ module Workling
         
         def initialize
           RudeqRunner.client = Workling::Rudeq::Client.new
-          RudeqRunner.routing = Workling::Starling::Routing::ClassAndMethodRouting.new
+          RudeqRunner.routing = Workling::Routing::ClassAndMethodRouting.new
         end
         
         def run(clazz, method, options = {})

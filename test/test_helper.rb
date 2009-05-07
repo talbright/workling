@@ -16,6 +16,7 @@ $:.unshift plugin_lib, plugin_test
 
 RAILS_ENV = "test"
 RAILS_ROOT = File.dirname(__FILE__) + "/.." # fake the rails root directory.
+RAILS_DEFAULT_LOGGER = ActiveSupport::BufferedLogger.new(File.dirname(__FILE__) + "/../test.log")
 
 require "mocks/spawn"
 require "mocks/logger"
@@ -48,6 +49,7 @@ require "workling/return/store/iterator"
 require "mocks/client"
 require "clients/memory_queue_client"
 require "runners/thread_runner"
+require "mocks/client"
 
 # worklings are in here.
 Workling.load_path = ["#{ plugin_root }/test/workers/**/*.rb"]

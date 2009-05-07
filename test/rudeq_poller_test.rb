@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/test_helper.rb'
 
 context "the RudeQ poller" do
   setup do
-    routing = Workling::Starling::Routing::ClassAndMethodRouting.new
+    routing = Workling::Routing::ClassAndMethodRouting.new
     @client = Workling::Rudeq::Poller.new(routing)
   end
   

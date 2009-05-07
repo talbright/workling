@@ -31,7 +31,6 @@ module Workling
         "config/workling.yml could not be loaded. check out README.markdown to see what this file should contain. "
     end
   end
-<<<<<<< HEAD:lib/workling.rb
   
   def self.path(*args)
     if defined?(RAILS_ROOT)

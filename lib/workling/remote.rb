@@ -11,7 +11,34 @@ require 'digest/md5'
 #
 module Workling
   module Remote
-    
+
+    # Select which invoke to load based on what is defined in workling.yml. Defaults to thread_poller
+    # if none are specified.
+    def self.select_invoker
+      case(Workling.config[:invoker])
+      when 'basic_poller'
+        require 'workling/remote/invokers/basic_poller'
+        Workling::Remote::Invokers::BasicPoller
+
+      when 'thread_pool_poller'
+        require 'workling/remote/invokers/thread_pool_poller'
+        Workling::Remote::Invokers::ThreadPoolPoller
+
+      when 'eventmachine_subscriber'
+        require 'workling/remote/invokers/eventmachine_subscriber'
+        Workling::Remote::Invokers::EventmachineSubscriber
+
+      when 'threaded_poller', nil
+        require 'workling/remote/invokers/threaded_poller'
+        Workling::Remote::Invokers::ThreadedPoller
+
+      else
+        require 'workling/remote/invokers/threaded_poller'
+        Workling.logger.error("Nothing is known about #{Workling.config[:invoker]} defaulting to thread_poller")
+        Workling::Remote::Invokers::ThreadedPoller
+      end
+    end
+
     # set the desired runner here. this is initialized with Workling.default_runner. 
     mattr_accessor :dispatcher
 
@@ -41,35 +68,6 @@ module Workling
       Workling.find(clazz, method) # this line raises a WorklingError if the method does not exist. 
       dispatcher.run(clazz, method, options)
       uid
-    end
-
-    private
-
-    # Select which invoke to load based on what is defined in workling.yml. Defaults to thread_poller
-    # if none are specified.
-    def self.select_invoker
-      case(Workling.config[:invoker])
-      when 'basic_poller'
-        require 'workling/remote/invokers/basic_poller'
-        Workling::Remote::Invokers::BasicPoller
-
-      when 'thread_pool_poller'
-        require 'workling/remote/invokers/thread_pool_poller'
-        Workling::Remote::Invokers::ThreadPoolPoller
-
-      when 'eventmachine_subscriber'
-        require 'workling/remote/invokers/eventmachine_subscriber'
-        Workling::Remote::Invokers::EventmachineSubscriber
-
-      when 'threaded_poller', nil
-        require 'workling/remote/invokers/threaded_poller'
-        Workling::Remote::Invokers::ThreadedPoller
-
-      else
-        require 'workling/remote/invokers/threaded_poller'
-        Workling.logger.error("Nothing is known about #{Workling.config[:invoker]} defaulting to thread_poller")
-        Workling::Remote::Invokers::ThreadedPoller
-      end
     end
 
   end
