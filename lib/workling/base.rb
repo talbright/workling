@@ -16,8 +16,10 @@
 #
 module Workling
   class Base
-    cattr_accessor :logger
-    @@logger ||= ::RAILS_DEFAULT_LOGGER
+    cattr_writer :logger
+    def self.logger
+      @@logger ||= ::RAILS_DEFAULT_LOGGER
+    end
 
     cattr_accessor :exposed_methods
     @@exposed_methods ||= {}

@@ -35,6 +35,7 @@ class WorklingServer
       opts.banner = 'Usage: myapp [options]'
       opts.separator ''
       opts.on('-a', '--app-name APP_NAME', String,"specify the process name") { |v| options[:app_name] = v }
+      opts.on('-d', '--dir DIR', String, "the directory to run in") { |v| options[:dir] = v }
       opts.on('-m', '--monitor',"specify the process name") { |v| options[:monitor] = true }
       opts.on('-t', '--ontop') { |k, v| pass_through << v  }
     end
@@ -59,11 +60,12 @@ class WorklingServer
 
 
   def self.build_poller(options)
-    require options[:workling_root] + '/lib/workling/remote'
-    require options[:workling_root] + '/lib/workling/remote/invokers/basic_poller'
-    require options[:workling_root] + '/lib/workling/remote/invokers/threaded_poller'
-    require options[:workling_root] + '/lib/workling/remote/invokers/eventmachine_subscriber'
-    require options[:workling_root] + '/lib/workling/routing/class_and_method_routing'
+    require 'workling/remote'
+    ["remote/invokers/*.rb", "routing/*.rb"].each do |pattern|
+      Dir.glob(pattern).each do |f|
+        require File.join(File.dirname(f), File.basename(f, ".rb"))
+      end
+    end
 
     routing_class = Object.module_eval("::#{options[:routing_class]}")
     client_class = Object.module_eval("::#{options[:client_class]}")

@@ -50,7 +50,7 @@ module Workling
 
   mattr_accessor :load_path
   @@load_path = [ File.expand_path(path('app', 'workers')) ]
-  
+
   VERSION = "0.4.2.3"
 
   #
