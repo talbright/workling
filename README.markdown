@@ -75,39 +75,45 @@ in your worker class. If it is present it will be called for every exception
 ## Running Workling (in production)
 
 The workling daemon can be invoked using the command
-  script/workling_client run
+
+    script/workling_client run
+
 This will make it run in the development environment, with the default settings unless overridden in your development.rb (see below)
 
 For production use the script takes a couple of options
-  script/workling_client <daemon_options> -- <app_options>
+
+    script/workling_client <daemon_options> -- <app_options>
 
 The daemon_options configure the runtime environment of the daemon and can be one of the following options:
-  --app-name APP_NAME
-  --monitor
-  --ontop
+
+    --app-name APP_NAME
+    --monitor
+    --ontop
+
 The app-name option is useful if you want to run worklings for multiple Rails apps on the same machine. Each app will need to have its unique name.
 The monitor option should not be specified if you are using Monit or god.
 
 The app_options allow you to specify the configuration of the workling interfaces via the command line:
---client CLIENT
---invoker INVOKER
---routing ROUTING
---load-path LOADPATH
---environment ENVIRONMENT
+
+    --client CLIENT
+    --invoker INVOKER
+    --routing ROUTING
+    --load-path LOADPATH
+    --environment ENVIRONMENT
 
 The client, invoker and routing params take the full class names of the relevant plugin classes. load-path allows overriding where workling looks for workers and environment should be self explanatory.
 
 The following is a sample of how workling_client can be used with god and AMQP:
 
-  God.watch do |w|
-    script = "#{RAILS_ROOT}/script/workling_client"
-    w.name = "myapp-workling"
-    w.start = "#{script} start -a myapp-workling -- -e production -i Workling::Remote::Invokers::EventmachineSubscriber -c Workling::Clients::AmqpClient"
-    w.restart = "#{script} restart -a myapp-workling -- -e production -i Workling::Remote::Invokers::EventmachineSubscriber -c Workling::Clients::AmqpClient"
-    w.stop = "#{script} stop -a myapp-workling"
+    God.watch do |w|
+      script = "#{RAILS_ROOT}/script/workling_client"
+      w.name = "myapp-workling"
+      w.start = "#{script} start -a myapp-workling -- -e production -i Workling::Remote::Invokers::EventmachineSubscriber -c Workling::Clients::AmqpClient"
+      w.restart = "#{script} restart -a myapp-workling -- -e production -i Workling::Remote::Invokers::EventmachineSubscriber -c Workling::Clients::AmqpClient"
+      w.stop = "#{script} stop -a myapp-workling"
 
-    w.pid_file = "#{RAILS_ROOT}/log/myapp-workling.pid"
-  end
+      w.pid_file = "#{RAILS_ROOT}/log/myapp-workling.pid"
+    end
 
 
 ## What should I know about the Spawn Runner?
@@ -286,18 +292,18 @@ this client requires the xmpp4r gem
 
 in the config/environments/development.rb file (or production.rb etc)
 
-  Workling::Remote::Runners::ClientRunner.client = Workling::Clients::XmppClient.new
-  Workling::Remote.dispatcher = Workling::Remote::Runners::ClientRunner.new        # dont use the standard runner
-  Workling::Remote.invoker = Workling::Remote::Invokers::LoopedSubscriber          # does not work with the EventmachineSubscriber Invoker
+    Workling::Remote::Runners::ClientRunner.client = Workling::Clients::XmppClient.new
+    Workling::Remote.dispatcher = Workling::Remote::Runners::ClientRunner.new        # dont use the standard runner
+    Workling::Remote.invoker = Workling::Remote::Invokers::LoopedSubscriber          # does not work with the EventmachineSubscriber Invoker
 
 furthermore in the workling.yml file you need to set up the server details for your XMPP server
 
-  development:
-    listens_on: "localhost:22122"
-    jabber_id: "sub@localhost/laptop"
-    jabber_server: "localhost"
-    jabber_password: "sub"
-    jabber_service: "pubsub.derfredtop.local"
+    development:
+      listens_on: "localhost:22122"
+      jabber_id: "sub@localhost/laptop"
+      jabber_server: "localhost"
+      jabber_password: "sub"
+      jabber_service: "pubsub.derfredtop.local"
 
 for details on how to configure your XMPP server (ejabberd) check out the following howto:
 
@@ -306,15 +312,15 @@ for details on how to configure your XMPP server (ejabberd) check out the follow
 
 finally you need to expose your worker methods to XMPP nodes like so:
 
-  class NotificationWorker < Workling::Base
+    class NotificationWorker < Workling::Base
 
-    expose :receive_notification, :as => "/home/localhost/pub/sub"
+      expose :receive_notification, :as => "/home/localhost/pub/sub"
 
-    def receive_notification(input)
-      # something here
+      def receive_notification(input)
+        # something here
+      end
+
     end
-
-  end
 
 # Using SQS
 
