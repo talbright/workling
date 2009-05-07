@@ -87,11 +87,13 @@ For production use the script takes a couple of options
 The daemon_options configure the runtime environment of the daemon and can be one of the following options:
 
     --app-name APP_NAME
+    --dir DIR
     --monitor
     --ontop
 
 The app-name option is useful if you want to run worklings for multiple Rails apps on the same machine. Each app will need to have its unique name.
 The monitor option should not be specified if you are using Monit or god.
+The dir options specifies where the logs and the pid files are saved.
 
 The app_options allow you to specify the configuration of the workling interfaces via the command line:
 
@@ -106,7 +108,7 @@ The client, invoker and routing params take the full class names of the relevant
 The following is a sample of how workling_client can be used with god and AMQP:
 
     God.watch do |w|
-      script = "#{RAILS_ROOT}/script/workling_client"
+      script = "cd #{RAILS_ROOT} && workling_client"
       w.name = "myapp-workling"
       w.start = "#{script} start -a myapp-workling -- -e production -i Workling::Remote::Invokers::EventmachineSubscriber -c Workling::Clients::AmqpClient"
       w.restart = "#{script} restart -a myapp-workling -- -e production -i Workling::Remote::Invokers::EventmachineSubscriber -c Workling::Clients::AmqpClient"
