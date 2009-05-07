@@ -1,3 +1,5 @@
+#require 'struct'
+
 #
 #  All worker classes must inherit from this class, and be saved in app/workers. 
 # 
@@ -71,17 +73,25 @@ module Workling
     # takes care of suppressing remote errors but raising Workling::WorklingNotFoundError
     # where appropriate. swallow workling exceptions so that everything behaves like remote code.
     # otherwise StarlingRunner and SpawnRunner would behave too differently to NotRemoteRunner.
-    def dispatch_to_worker_method(method, options)
+    def dispatch_to_worker_method(method, options = {})
       begin
+        options = default_options.merge(options)
         self.send(method, options)
+      rescue Workling::WorklingError => e
+        raise e
       rescue Exception => e
-        raise e if e.kind_of?(Workling::WorklingError)
         notify_exception e, method, options
+        on_error(e) if respond_to?(:on_error)
 
         # reraise after logging. the exception really can't go anywhere in many cases. (spawn traps the exception)
         raise e if Workling.raise_exceptions?
       end
     end    
+
+    # supply default_options as a hash in classes that inherit Workling::Base
+    def default_options
+      {}
+    end
   
     # thanks to blaine cook for this suggestion.
     def self.method_missing(method, *args, &block)
@@ -90,6 +100,14 @@ module Workling
       else
         super
       end
+    end
+    
+    def self.logger
+      @logger ||= defined?(RAILS_DEFAULT_LOGGER) ? ::RAILS_DEFAULT_LOGGER : Logger.new($stdout)
+    end
+
+    def logger
+      self.class.logger
     end
   end
 end

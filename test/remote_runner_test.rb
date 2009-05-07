@@ -47,4 +47,12 @@ context "the remote runner" do
     Util.any_instance.expects(:stuffing).with(stuffing).once
     Util.asynch_stuffing(stuffing)
   end
+
+  specify "should use default arguments if they exist" do
+    default_options = { :flavor => 'purple' }
+    custom_options  = { :color  => 'purple' }
+    Util.any_instance.expects(:default_options).returns(default_options)
+    Util.any_instance.expects(:stuffing).with(all_of(has_entry(:flavor => 'purple'), has_entry(:color => 'purple'))).once
+    Util.asynch_stuffing(custom_options)
+  end
 end

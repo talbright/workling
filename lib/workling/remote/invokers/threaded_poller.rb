@@ -22,10 +22,7 @@ module Workling
           @mutex = Mutex.new
         end      
           
-        def listen                
-          # Allow concurrency for our tasks
-          ActiveRecord::Base.allow_concurrency = true
-
+        def listen
           # Create a thread for each worker.
           Workling::Discovery.discovered.each do |clazz|
             logger.debug("Discovered listener #{clazz}")
@@ -38,7 +35,10 @@ module Workling
           logger.debug("Reaped listener threads. ")
         
           # Clean up all the connections.
-          ActiveRecord::Base.verify_active_connections!
+          if defined?(ActiveRecord::Base)
+            ActiveRecord::Base.verify_active_connections!
+          end
+
           logger.debug("Cleaned up connection: out!")
         end
       
@@ -71,10 +71,11 @@ module Workling
             if Workling.config[:listeners].has_key?(clazz.to_s)
               config = Workling.config[:listeners][clazz.to_s].symbolize_keys
               thread_sleep_time = config[:sleep_time] if config.has_key?(:sleep_time)
+              Thread.current.priority = config[:priority] if config.has_key?(:priority)
             end
           end
 
-          hread_sleep_time ||= self.class.sleep_time
+          thread_sleep_time ||= self.class.sleep_time
                 
           # Setup connection to client (one per thread)
           connection = @client_class.new
@@ -96,11 +97,13 @@ module Workling
               #     threads would hit serious issues at this block of code without 
               #     the mutex.            
               #
-              @mutex.synchronize do 
-                unless ActiveRecord::Base.connection.active?  # Keep MySQL connection alive
-                  unless ActiveRecord::Base.connection.reconnect!
-                    logger.fatal("Failed - Database not available!")
-                    break
+              if defined?(ActiveRecord::Base)
+                @mutex.synchronize do 
+                  unless ActiveRecord::Base.connection.active?  # Keep MySQL connection alive
+                    unless ActiveRecord::Base.connection.reconnect!
+                      logger.fatal("Failed - Database not available!")
+                      break
+                    end
                   end
                 end
               end
@@ -108,14 +111,14 @@ module Workling
               # Dispatch and process the messages
               n = dispatch!(connection, clazz)
               logger.debug("Listener thread #{clazz.name} processed #{n.to_s} queue items") if n > 0
-              sleep(self.class.sleep_time) unless n > 0
+              sleep(thread_sleep_time) unless n > 0
             
-              # If there is a memcache error, hang for a bit to give it a chance to fire up again
-              # and reset the connection.
-              rescue Workling::WorklingConnectionError
-                logger.warn("Listener thread #{clazz.name} failed to connect. Resetting connection.")
-                sleep(self.class.reset_time)
-                connection.reset
+            # If there is a memcache error, hang for a bit to give it a chance to fire up again
+            # and reset the connection.
+            rescue Workling::WorklingConnectionError
+              logger.warn("Listener thread #{clazz.name} failed to connect. Resetting connection.")
+              sleep(self.class.reset_time)
+              connection.reset
             end
           end
         
@@ -136,7 +139,7 @@ module Workling
                 logger.debug("Calling #{handler.class.to_s}\##{method_name}(#{result.inspect})")
                 handler.dispatch_to_worker_method(method_name, result)
               end
-            rescue MemCache::MemCacheError => e
+            rescue Workling::WorklingError => e
               logger.error("FAILED to connect with queue #{ queue }: #{ e } }")
               raise e
             end

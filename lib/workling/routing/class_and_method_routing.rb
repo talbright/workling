@@ -8,7 +8,7 @@ module Workling
     class ClassAndMethodRouting < Base
           
       # initializes and builds routing hash. 
-      def initialize
+      def initialize(*args)
         super
 
         build
@@ -44,7 +44,7 @@ module Workling
       private
         def build
           Workling::Discovery.discovered.each do |clazz|
-            methods = clazz.instance_methods(false)
+            methods = clazz.public_instance_methods(false)
             methods.each do |method|
               next if method == 'create'  # Skip the create method
               queue = queue_for(clazz, method)
