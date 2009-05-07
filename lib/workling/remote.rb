@@ -17,23 +17,18 @@ module Workling
     def self.select_invoker
       case(Workling.config[:invoker])
       when 'basic_poller'
-        require 'workling/remote/invokers/basic_poller'
         Workling::Remote::Invokers::BasicPoller
 
       when 'thread_pool_poller'
-        require 'workling/remote/invokers/thread_pool_poller'
         Workling::Remote::Invokers::ThreadPoolPoller
 
       when 'eventmachine_subscriber'
-        require 'workling/remote/invokers/eventmachine_subscriber'
         Workling::Remote::Invokers::EventmachineSubscriber
 
       when 'threaded_poller', nil
-        require 'workling/remote/invokers/threaded_poller'
         Workling::Remote::Invokers::ThreadedPoller
 
       else
-        require 'workling/remote/invokers/threaded_poller'
         Workling.logger.error("Nothing is known about #{Workling.config[:invoker]} defaulting to thread_poller")
         Workling::Remote::Invokers::ThreadedPoller
       end
