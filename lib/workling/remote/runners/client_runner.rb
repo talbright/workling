@@ -16,26 +16,30 @@ module Workling
   module Remote
     module Runners
       class ClientRunner < Workling::Remote::Runners::Base
-        
+
         # Routing class. Workling::Routing::ClassAndMethodRouting.new by default. 
-        cattr_accessor :routing
-        @@routing ||= Workling::Routing::ClassAndMethodRouting.new
-        
+        cattr_writer :routing
+        def self.routing
+          @@routing ||= Workling::Routing::ClassAndMethodRouting.new
+        end
+
         # The workling Client class. Workling::Clients::MemcacheQueueClient.new by default. 
-        cattr_accessor :client
-        @@client ||= Workling::Clients::MemcacheQueueClient.new
-        
+        cattr_writer :client
+        def self.client
+          @@client ||= Workling::Clients::MemcacheQueueClient.new
+        end
+
         # enqueues the job onto the client
         def run(clazz, method, options = {})
-          
           # neet to connect in here as opposed to the constructor, since the EM loop is
           # not available there. 
           @connected ||= self.class.client.connect
-          
-          self.class.client.request(@@routing.queue_for(clazz, method), options)    
-          
+
+          self.class.client.request(self.class.routing.queue_for(clazz, method), options)    
+
           return nil
         end
+
       end
     end
   end
