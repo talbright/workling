@@ -39,11 +39,12 @@ class WorklingDaemon
     opts = OptionParser.new do |opts|
       opts.banner = 'Usage: myapp [options]'
       opts.separator ''
-      opts.on('-c', '--client CLIENT', String,"specify the client class") { |v| options[:client_class] = v }
-      opts.on('-i', '--invoker INVOKER', String,"specify the invoker class") { |v| options[:invoker_class] = v }
-      opts.on('-r', '--routing ROUTING', String,"specify the routing class") { |v| options[:routing_class] = v }
-      opts.on('-l', '--load-path LOADPATH', String,"specify the load_path for the workers") { |v| options[:load_path] = v }
-      opts.on('-e', '--environment ENVIRONMENT', String,"specify the environment") { |v| options[:rails_env] = v }
+      opts.on('-n', '--no_rails', "do not load Rails") { |v| options[:no_rails] = true }
+      opts.on('-c', '--client CLIENT', String, "specify the client class") { |v| options[:client_class] = v }
+      opts.on('-i', '--invoker INVOKER', String, "specify the invoker class") { |v| options[:invoker_class] = v }
+      opts.on('-r', '--routing ROUTING', String, "specify the routing class") { |v| options[:routing_class] = v }
+      opts.on('-l', '--load-path LOADPATH', String, "specify the load_path for the workers") { |v| options[:load_path] = v }
+      opts.on('-e', '--environment ENVIRONMENT', String, "specify the environment") { |v| options[:rails_env] = v }
     end
     opts.parse!(partition_options(args).last)
     options
@@ -66,10 +67,11 @@ class WorklingDaemon
 
 
   def self.run(options)
-    ENV["RAILS_ENV"] = options[:rails_env]
-    puts "=> Loading Rails with #{ENV["RAILS_ENV"]} environment..."
-
-    require options[:rails_root] + '/config/environment'
+    unless options[:no_rails]
+      ENV["RAILS_ENV"] = options[:rails_env]
+      puts "=> Loading Rails with #{ENV["RAILS_ENV"]} environment..."
+      require options[:rails_root] + '/config/environment'
+    end
 
     Workling.load_path = options[:load_path]
 
@@ -82,8 +84,10 @@ class WorklingDaemon
     puts "** Starting #{ poller.class }..."
     puts '** Use CTRL-C to stop.'
 
-    ActiveRecord::Base.logger = Workling::Base.logger
-    ActionController::Base.logger = Workling::Base.logger
+    unless options[:no_rails]
+      ActiveRecord::Base.logger = Workling::Base.logger
+      ActionController::Base.logger = Workling::Base.logger
+    end
 
     trap(:INT) { poller.stop; exit }
 

@@ -18,8 +18,9 @@ workling_options = {
   :invoker_class => "Workling::Remote::Invokers::ThreadedPoller",
   :routing_class => "Workling::Routing::ClassAndMethodRouting",
   :rails_root => Dir.pwd,
-  :load_path => [ 'app/workers/**/*.rb' ],
-  :rails_env => (ENV['RAILS_ENV'] || "development").dup
+  :load_path => ['app/workers/**/*.rb'],
+  :rails_env => (ENV['RAILS_ENV'] || "development").dup,
+  :no_rails => false
 }.merge(WorklingDaemon.parse_workling_options(ARGV))
 
 Daemons.run_proc(daemon_options[:app_name], daemon_options) do
