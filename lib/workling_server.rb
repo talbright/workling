@@ -1,15 +1,6 @@
 require 'optparse'
 
 class WorklingServer
-  @@in_server_mode = false
-  def self.in_server_mode
-    @@in_server_mode
-  end
-
-  def self.in_server_mode=(server_mode)
-    @@in_server_mode = server_mode
-  end
-
 
   def self.partition_options(args)
     daemon = []
