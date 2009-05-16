@@ -14,9 +14,10 @@
 #
 module Workling
   class Base
+
     cattr_writer :logger
     def self.logger
-      @@logger ||= ::RAILS_DEFAULT_LOGGER
+      @@logger ||= defined?(RAILS_DEFAULT_LOGGER) ? ::RAILS_DEFAULT_LOGGER : Logger.new($stdout)
     end
 
     cattr_accessor :exposed_methods
@@ -99,10 +100,6 @@ module Workling
       else
         super
       end
-    end
-    
-    def self.logger
-      @logger ||= defined?(RAILS_DEFAULT_LOGGER) ? ::RAILS_DEFAULT_LOGGER : Logger.new($stdout)
     end
 
     def logger
