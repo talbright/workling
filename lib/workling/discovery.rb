@@ -4,7 +4,7 @@
 module Workling
   class Discovery
     cattr_accessor :discovered
-    @@discovered = []
+    @@discovered ||= []
 
     # requires worklings so that they are added to routing.
     def self.discover!
