@@ -1,5 +1,3 @@
-#require 'struct'
-
 #
 #  All worker classes must inherit from this class, and be saved in app/workers. 
 # 
