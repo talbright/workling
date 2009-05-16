@@ -1,7 +1,3 @@
-require 'workling/remote/runners/base'
-require 'workling/routing/class_and_method_routing'
-require 'workling/clients/memcache_queue_client'
-
 #
 #  Runs Jobs over a Client. The client should be a subclass of Workling::Client::Base. 
 #  Set the client like this: 

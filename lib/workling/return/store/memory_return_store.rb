@@ -1,5 +1,3 @@
-require 'workling/return/store/base'
-
 #
 #  Stores directly into memory. This is for tests only - not for production use. aight?
 #

@@ -1,5 +1,3 @@
-require 'workling/remote/runners/base'
-
 #
 # directly dispatches to the worker method, in-process. options are first marshalled then dumped
 # in order to simulate the sideeffects of a remote call.

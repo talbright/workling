@@ -1,4 +1,3 @@
-require 'workling/clients/base'
 require 'json'
 require 'right_aws'
 

@@ -1,5 +1,3 @@
-require 'workling/clients/base'
-
 module Workling
   module Clients
     class MemoryQueueClient < Workling::Clients::Base

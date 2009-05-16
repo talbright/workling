@@ -1,5 +1,3 @@
-require 'workling/remote/runners/client_runner'
-
 #
 #  DEPRECATED. Should use ClientRunner instead. 
 #

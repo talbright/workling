@@ -1,5 +1,3 @@
-require 'workling/remote/invokers/base'
-
 require 'thread'
 require 'mutex_m'
 

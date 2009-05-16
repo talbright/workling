@@ -1,5 +1,3 @@
-require 'workling/clients/base'
-
 #
 #  This client can be used for all Queue Servers that speak Memcached, such as Starling. 
 #

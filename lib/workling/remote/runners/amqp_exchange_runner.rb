@@ -1,5 +1,3 @@
-require 'workling/remote/runners/base'
-
 #
 #  Runs Jobs over a Client. The client should be a subclass of Workling::Client::Base. 
 #  Set the client like this: 

@@ -1,5 +1,4 @@
 require 'eventmachine'
-require 'workling/remote/invokers/base'
 
 #
 #  Subscribes the workers to the correct queues. 

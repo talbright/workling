@@ -1,5 +1,3 @@
-require 'workling/routing/base'
-
 #
 #  Holds a hash of routes. Each Worker method has a corresponding hash entry after building. 
 #

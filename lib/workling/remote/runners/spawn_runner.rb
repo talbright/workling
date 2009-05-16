@@ -1,5 +1,3 @@
-require 'workling/remote/runners/base'
-
 #
 #  Run the job over the spawn plugin. Refer to the README for instructions on 
 #  installing Spawn. 

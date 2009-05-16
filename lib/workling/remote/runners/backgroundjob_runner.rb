@@ -1,5 +1,3 @@
-require 'workling/remote/runners/base'
-
 #
 #  Use Ara Howards BackgroundJob to run the work. BackgroundJob loads Rails once per requested Job. 
 #  It persists over the database, and there is no requirement for separate processes to be started. 

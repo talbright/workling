@@ -1,5 +1,3 @@
-require 'workling/remote/runners/base'
-
 #
 # this does absolutely nothing, mainly for testing
 #

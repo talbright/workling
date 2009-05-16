@@ -1,5 +1,3 @@
-require 'workling/remote/runners/base'
-
 #
 #  Spawns a Thread. Used for Tests only, to simulate a remote runner more realistically. 
 #

@@ -1,6 +1,3 @@
-require 'workling/return/store/base'
-require 'workling/clients/memcache_queue_client'
-
 #
 #  Recommended Return Store if you are using the Starling Runner. This
 #  Simply sets and gets values against queues. 'key' is the name of the respective Queue. 

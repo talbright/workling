@@ -1,5 +1,3 @@
-require 'workling/remote/invokers/base'
-
 #
 #  A threaded polling Invoker. 
 # 

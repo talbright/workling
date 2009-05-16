@@ -1,5 +1,3 @@
-require 'workling/routing/base'
-
 #
 #  Holds a single route for a dedicated worker (if you want more worker processes, run more workers)
 #

@@ -1,5 +1,4 @@
 require 'eventmachine'
-require 'workling/remote/invokers/base'
 
 #
 # TODO - Subscribes a single worker to a single queue 
