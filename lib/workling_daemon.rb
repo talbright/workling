@@ -1,6 +1,6 @@
 require 'optparse'
 
-class WorklingServer
+class WorklingDaemon
 
   def self.partition_options(args)
     daemon = []
@@ -66,8 +66,6 @@ class WorklingServer
 
 
   def self.run(options)
-    WorklingServer.in_server_mode = true
-
     ENV["RAILS_ENV"] = options[:rails_env]
     puts "=> Loading Rails with #{ENV["RAILS_ENV"]} environment..."
 
