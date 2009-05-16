@@ -40,6 +40,7 @@ module Workling
         def dispatch!(clazz, method, options)
           Workling.find(clazz, method).dispatch_to_worker_method(method, options)
         end
+
       end
     end
   end

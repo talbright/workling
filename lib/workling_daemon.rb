@@ -63,6 +63,9 @@ class WorklingDaemon
     routing_class = Object.module_eval("::#{options[:routing_class]}")
     client_class = Object.module_eval("::#{options[:client_class]}")
     invoker_class = Object.module_eval("::#{options[:invoker_class]}")
+
+    client_class.load
+
     invoker_class.new(routing_class.new, client_class)
   end
 

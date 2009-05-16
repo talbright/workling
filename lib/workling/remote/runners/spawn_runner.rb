@@ -40,7 +40,7 @@ module Workling
           spawn(SpawnRunner.options) do # exceptions are trapped in here. 
             dispatch!(clazz, method, options)
           end
-          
+
           return nil # that means nothing!
         end
 
