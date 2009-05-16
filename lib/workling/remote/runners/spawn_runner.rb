@@ -18,12 +18,22 @@ module Workling
   module Remote
     module Runners
       class SpawnRunner < Workling::Remote::Runners::Base
+
+        def self.installed?
+          begin
+            require 'spawn'
+          rescue LoadError
+          end
+
+          Object.const_defined? "Spawn"
+        end
+
         cattr_accessor :options
-        
+
         # use thread for development and test modes. easier to hunt down exceptions that way. 
         @@options = { :method => (RAILS_ENV == "test" || RAILS_ENV == "development" ? :fork : :thread) }
-        include Spawn if Workling.spawn_installed?
-        
+        include Spawn if installed?
+
         # dispatches to Spawn, using the :fork option. 
         def run(clazz, method, options = {})
           spawn(SpawnRunner.options) do # exceptions are trapped in here. 
@@ -32,6 +42,7 @@ module Workling
           
           return nil # that means nothing!
         end
+
       end
     end
   end

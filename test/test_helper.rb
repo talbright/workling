@@ -25,8 +25,6 @@ require "workling"
 require "workling_server"
 require "workling/base"
 
-Workling.try_load_a_memcache_client
-
 require "workling/discovery"
 require "workling/routing/class_and_method_routing"
 require "workling/routing/static_routing"

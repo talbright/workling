@@ -1,6 +1,11 @@
 require File.dirname(__FILE__) + '/test_helper'
 
 context "The memcachequeue client" do
+
+  setup do
+    Workling::Clients::MemcacheQueueClient.load
+  end
+
   specify "should be able to connect to multiple queue instances" do
     Workling.send :class_variable_set, "@@config", { :listens_on => "localhost:12345, 127.0.0.1:12346", :memcache_options => { :namespace => "myapp_development" } }
     client = Workling::Clients::MemcacheQueueClient.new

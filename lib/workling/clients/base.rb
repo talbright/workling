@@ -8,6 +8,13 @@ module Workling
   module Clients
     class Base
 
+      #
+      # Load the required libraries, for this client
+      #
+      def self.load
+        
+      end
+
       # returns the Workling::Base.logger
       def logger; Workling::Base.logger; end
 

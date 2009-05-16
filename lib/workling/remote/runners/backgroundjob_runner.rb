@@ -9,8 +9,13 @@ module Workling
   module Remote
     module Runners
       class BackgroundjobRunner < Workling::Remote::Runners::Base
+
+        def self.installed?
+          Object.const_defined? "Bj"
+        end
+
         cattr_accessor :routing
-        
+
         def initialize
           BackgroundjobRunner.routing = 
             Workling::Routing::ClassAndMethodRouting.new

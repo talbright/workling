@@ -1,5 +1,4 @@
 require 'workling/clients/base'
-Workling.try_load_xmpp4r
 
 #
 #  An XMPP client
@@ -44,6 +43,19 @@ Workling.try_load_xmpp4r
 module Workling
   module Clients
     class XmppClient < Workling::Clients::Base
+
+      def self.load
+        begin
+          gem "xmpp4r"
+          require 'xmpp4r'
+          require "xmpp4r/pubsub"
+          require "xmpp4r/pubsub/helper/servicehelper.rb"
+          require "xmpp4r/pubsub/helper/nodebrowser.rb"
+          require "xmpp4r/pubsub/helper/nodehelper.rb"
+        rescue Exception => e
+          raise WorklingError.new("Couldnt load the XMPP library. check that you have the xmpp4r gem installed")
+        end
+      end
 
       # starts the client. 
       def connect

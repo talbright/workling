@@ -1,5 +1,4 @@
 require 'workling/clients/base'
-require 'memcache'
 
 #
 #  This client can be used for all Queue Servers that speak Memcached, such as Starling. 
@@ -13,11 +12,25 @@ require 'memcache'
 module Workling
   module Clients
     class MemcacheQueueClient < Workling::Clients::Base
-      
-      # the class with which the connection is instantiated
-      cattr_accessor :memcache_client_class
-      @@memcache_client_class ||= ::MemCache
-      
+
+      def self.installed?
+        begin
+          require 'starling' 
+        rescue LoadError
+        end
+
+        Object.const_defined? "Starling"
+      end
+
+      def self.load
+        begin
+          gem 'memcache-client'
+          require 'memcache'
+        rescue Gem::LoadError
+          Workling::Base.logger.info "WORKLING: couldn't find memcache-client. Install: \"gem install memcache-client\". "
+        end
+      end
+
       # the url with which the memcache client expects to reach starling
       attr_accessor :queueserver_urls
       
@@ -35,7 +48,7 @@ module Workling
       def connect
         @queueserver_urls = Workling.config[:listens_on].split(',').map { |url| url ? url.strip : url }
         options = [@queueserver_urls, Workling.config[:memcache_options]].compact
-        self.connection = MemcacheQueueClient.memcache_client_class.new(*options)
+        self.connection = MemCache.new(*options)
         
         raise_unless_connected!
       end

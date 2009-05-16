@@ -22,10 +22,14 @@ module Workling
   module Remote
     module Runners
       class Base
-        
+
+        def self.installed?
+          raise NotImplementedError.new("Implement self.installed? in your runner.")
+        end
+
         # runner uses this to connect to a job broker
         cattr_accessor :client
-        
+
         # default logger defined in Workling::Base.logger
         def logger
           Workling::Base.logger
