@@ -24,22 +24,19 @@ module Workling
           raise WorklingError.new("couldn't start amq client. if you're running this in a server environment, then make sure the server is evented (ie use thin or evented mongrel, not normal mongrel.)")
         end
       end
-      
+
       # no need for explicit closing. when the event loop
       # terminates, the connection is closed anyway. 
       def close; true; end
-      
+
       # subscribe to a queue
       def subscribe(key)
         @amq.queue(key).subscribe do |header, body|
-
-          puts "***** received msg with header - #{header.inspect}"
-
           value = YAML.load(body)
           yield value
         end
       end
-      
+
       # request and retrieve work
       def retrieve(key)
           @amq.queue(key)
@@ -53,6 +50,7 @@ module Workling
         exchange = @amq.topic(exchange_name)
         exchange.publish(msg, :routing_key => key)
       end
+
     end
   end
 end
