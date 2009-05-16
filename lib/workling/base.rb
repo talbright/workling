@@ -83,7 +83,6 @@ module Workling
         raise e
       rescue Exception => e
         notify_exception e, method, options
-        on_error(e) if respond_to?(:on_error)
 
         # reraise after logging. the exception really can't go anywhere in many cases. (spawn traps the exception)
         raise e if Workling.raise_exceptions?

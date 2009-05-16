@@ -15,10 +15,8 @@ context "Exceptions raised by worker" do
     }.should.not.raise
   end
 
-  specify "should call on_error method" do 
-    count = Util.on_error_call_count
+  specify "should call notify_exception method" do 
+    Util.any_instance.expects(:notify_exception).once
     Workling::Remote.run(:util, :broken)
-
-    Util.on_error_call_count.should.equal(count + 1)
   end
 end
