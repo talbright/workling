@@ -57,19 +57,19 @@ module Workling
         
         # returns the Workling::Base.logger
         def logger; Workling::Base.logger; end
-        
+
         protected
-        
+
           # handle opening and closing of client. pass code block to this method. 
           def connect
             @client = @client_class.new
             @client.connect
-            
+
             begin
               yield
             ensure
               @client.close
-              ActiveRecord::Base.verify_active_connections!
+              ActiveRecord::Base.verify_active_connections! if defined?(ActiveRecord::Base)
             end
           end
 
@@ -80,12 +80,12 @@ module Workling
           def loop_routes
             while(!@shutdown) do
               ensure_activerecord_connection
-              
+
               routes.each do |route|
                 break if @shutdown
                 yield route
               end
-              
+
               sleep self.sleep_time
             end
           end
@@ -109,14 +109,16 @@ module Workling
           #     the mutex.            
           #
           def ensure_activerecord_connection
-            @@mutex.synchronize do 
-              unless ActiveRecord::Base.connection.active?  # Keep MySQL connection alive
-                unless ActiveRecord::Base.connection.reconnect!
-                  logger.fatal("Failed - Database not available!")
-                  break
+            if defined?(ActiveRecord::Base)
+              @@mutex.synchronize do
+                unless ActiveRecord::Base.connection.active?  # Keep MySQL connection alive
+                  unless ActiveRecord::Base.connection.reconnect!
+                    logger.fatal("Failed - Database not available!")
+                    break
+                  end
                 end
               end
-            end            
+            end
           end
       end
     end
