@@ -49,10 +49,10 @@ module Workling
         @queueserver_urls = Workling.config[:listens_on].split(',').map { |url| url ? url.strip : url }
         options = [@queueserver_urls, Workling.config[:memcache_options]].compact
         self.connection = MemCache.new(*options)
-        
+
         raise_unless_connected!
       end
-      
+
       # closes the memcache connection
       def close
         self.connection.flush_all

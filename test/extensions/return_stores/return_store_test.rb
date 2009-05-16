@@ -1,6 +1,10 @@
-require File.dirname(__FILE__) + '/test_helper'
+require File.dirname(__FILE__) + '/../../test_helper'
 
 context "The return store" do
+  setup do
+    Workling::Return::Store.instance = Workling::Return::Store::MemoryReturnStore.new
+  end
+
   specify "should set a value on the current store when invoked like this: Workling::Return::Store.set(:key, 'value')" do
     Workling::Return::Store.set(:key, :value)
     Workling::Return::Store.get(:key).should.equal :value

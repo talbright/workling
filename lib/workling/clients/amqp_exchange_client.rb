@@ -1,5 +1,4 @@
 require 'workling/clients/base'
-Workling.try_load_an_amqp_client
 
 #
 #  An Ampq client
@@ -7,7 +6,18 @@ Workling.try_load_an_amqp_client
 module Workling
   module Clients
     class AmqpExchangeClient < Workling::Clients::Base
-      
+
+      def self.load
+        begin
+          require 'mq'
+        rescue Exception => e
+          raise WorklingError.new(
+            "WORKLING: couldn't find the ruby amqp client - you need it for the amqp runner. " \
+            "Install from github: gem sources -a http://gems.github.com/ && sudo gem install tmm1-amqp "
+          )
+        end
+      end
+
       # starts the client. 
       def connect
         begin

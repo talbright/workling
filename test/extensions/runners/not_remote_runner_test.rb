@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/test_helper'
+require File.dirname(__FILE__) + '/../../test_helper'
 
 context "The not remote runner" do  
   specify "should swallow exceptions raised in the workling" do

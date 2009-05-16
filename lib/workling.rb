@@ -128,6 +128,14 @@ end
 require "workling/discovery"
 require "workling/base"
 require "workling/remote"
-require "workling/return/store/base"
-require "workling/return/store/memory_return_store"
-require "workling/return/store/starling_return_store"
+
+# load all possible extension classes
+["clients", "remote/invokers", "remote/runners", "return/store", "routing"].each do |e_dirs|
+  # first the base
+  require "workling/#{e_dirs}/base"
+
+  # now the implemenations
+  Dir.glob(File.join(File.dirname(__FILE__), "workling", e_dirs, "*.rb")).each do |rb_file|
+    require File.join(File.dirname(rb_file), File.basename(rb_file, ".rb"))
+  end
+end

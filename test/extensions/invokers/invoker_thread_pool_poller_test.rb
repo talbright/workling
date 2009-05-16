@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/test_helper.rb'
+require File.dirname(__FILE__) + '/../../test_helper'
 
 context "the invoker 'thread pool poller'" do
   setup do

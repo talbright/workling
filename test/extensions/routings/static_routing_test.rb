@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/test_helper.rb'
+require File.dirname(__FILE__) + '/../../test_helper'
 
 context "static routing" do
   specify "should create an instance of the specified worker class" do

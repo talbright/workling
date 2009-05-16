@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/test_helper.rb'
+require File.dirname(__FILE__) + '/../../test_helper'
 
 context "the memory return store" do
   specify "should be able to store a value with a key, and then retrieve that same value with the same key." do

@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/test_helper.rb'
+require File.dirname(__FILE__) + '/../../test_helper'
 
 context "the spawn runner" do  
   specify "should invoke work that is delegated to it" do

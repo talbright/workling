@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/test_helper.rb'
+require File.dirname(__FILE__) + '/../../test_helper'
 
 context "the remote runner" do
   specify "should be able to invoke a task on a worker" do

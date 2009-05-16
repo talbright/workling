@@ -1,4 +1,6 @@
-require File.dirname(__FILE__) + '/test_helper.rb'
+require File.dirname(__FILE__) + '/../test_helper'
+
+require "workling_server"
 
 class MyClient < Workling::Clients::Base; end;
 class MyInvoker < Workling::Remote::Invokers::Base

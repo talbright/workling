@@ -21,37 +21,12 @@ RAILS_DEFAULT_LOGGER = ActiveSupport::BufferedLogger.new(File.dirname(__FILE__) 
 require "mocks/spawn"
 require "mocks/logger"
 require "mocks/rude_queue"
-require "workling"
-require "workling_server"
-require "workling/base"
 
-require "workling/discovery"
-require "workling/routing/class_and_method_routing"
-require "workling/routing/static_routing"
-require "workling/remote/invokers/basic_poller"
-require "workling/remote/invokers/threaded_poller"
-require "workling/remote/invokers/thread_pool_poller"
-require "workling/remote/invokers/eventmachine_subscriber"
-require "workling/rudeq/poller"
-require "workling/remote"
-require "workling/remote/runners/not_remote_runner"
-require "workling/remote/runners/spawn_runner"
-require "workling/remote/runners/rudeq_runner"
-require "workling/remote/runners/starling_runner"
-require "workling/remote/runners/client_runner"
-require "workling/remote/runners/backgroundjob_runner"
-require "workling/return/store/memory_return_store"
-require "workling/return/store/starling_return_store"
-require "workling/return/store/rudeq_return_store"
-require "workling/return/store/iterator"
-require "mocks/client"
-require "clients/memory_queue_client"
-require "runners/thread_runner"
-require "mocks/client"
+require File.join(File.dirname(__FILE__), "../lib/workling")
+
 
 # worklings are in here.
 Workling.load_path = ["#{ plugin_root }/test/workers/**/*.rb"]
-Workling::Return::Store.instance = Workling::Return::Store::MemoryReturnStore.new
 Workling::Discovery.discover!
 
 # make this behave like production code

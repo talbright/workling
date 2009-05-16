@@ -1,11 +1,11 @@
-require File.dirname(__FILE__) + '/test_helper'
+require File.dirname(__FILE__) + '/../../test_helper'
 
 context "the starling return store" do
   setup do
-    # the memoryreturnstore behaves exactly like memcache. 
-    MemCache.expects(:new).at_least(0).returns Workling::Return::Store::MemoryReturnStore.new
-    Workling::Clients::MemcacheQueueClient.expects(:connection).at_least(0).returns Workling::Return::Store::MemoryReturnStore.new
-    Workling.send :class_variable_set, "@@config", { :listens_on => "localhost:12345" }
+    # the memoryreturnstore behaves exactly like memcache.
+    return_store = Workling::Return::Store::MemoryReturnStore.new
+    return_store.stubs(:connect)
+    Workling::Clients::MemcacheQueueClient.expects(:new).at_least(0).returns return_store
   end
   
   specify "should be able to store a value with a key, and then retrieve that same value with the same key." do

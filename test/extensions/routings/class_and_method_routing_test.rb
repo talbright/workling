@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/test_helper.rb'
+require File.dirname(__FILE__) + '/../../test_helper'
 
 context "class and method routing" do
   specify "should create a queue called utils:echo for a Util class that subclasses worker and has the method echo" do
