@@ -74,7 +74,7 @@ module Workling
       Workling::Remote::Runners::NotRemoteRunner.new
     end
   end
-  
+
   #
   # gets the worker instance, given a class. the optional method argument will cause an 
   # exception to be raised if the worker instance does not respoind to said method. 
@@ -88,7 +88,7 @@ module Workling
     raise_not_found(clazz, method) if method && !inst.respond_to?(method)
     inst
   end
-  
+
   # returns Workling::Return::Store.instance. 
   def self.return
     Workling::Return::Store.instance
@@ -97,17 +97,23 @@ module Workling
   #
   #  returns a config hash. reads ./config/workling.yml
   #
+  mattr_writer :config
   def self.config
     return @@config if defined?(@@config) && @@config
 
-    config_path = File.join(RAILS_ROOT, 'config', 'workling.yml')
     return nil unless File.exists?(config_path)
-    
+
     @@config ||= YAML.load_file(config_path)[RAILS_ENV || 'development'].symbolize_keys
     @@config[:memcache_options].symbolize_keys! if @@config[:memcache_options]
     @@config
   end
-  
+
+  mattr_writer :config_path
+  def self.config_path
+    return @@config_path if defined?(@@config_path) && @@config_path
+    @@config_path = File.join(RAILS_ROOT, 'config', 'workling.yml')
+  end
+
   #
   #  Raises exceptions thrown inside of the worker. normally, these are logged to 
   #  logger.error. it's easy to miss these log calls while developing, though. 
