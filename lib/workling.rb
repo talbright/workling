@@ -51,7 +51,7 @@ module Workling
   mattr_accessor :load_path
   @@load_path = [ File.expand_path(path('app', 'workers')) ]
 
-  VERSION = "0.4.9"
+  VERSION = "0.4.9" unless defined?(VERSION)
 
   #
   # determine the runner to use if nothing is specifically set. workling will try to detect
@@ -64,8 +64,6 @@ module Workling
   def self.default_runner
     if env == "test"
       Workling::Remote::Runners::NotRemoteRunner.new
-    elsif Workling::Remote::Runners::StarlingRunner.installed?
-      Workling::Remote::Runners::StarlingRunner.new
     elsif Workling::Remote::Runners::SpawnRunner.installed?
       Workling::Remote::Runners::SpawnRunner.new
     elsif Workling::Remote::Runners::BackgroundjobRunner.installed?

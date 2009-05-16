@@ -14,9 +14,11 @@ begin; require 'redgreen'; rescue; end
 
 $:.unshift plugin_lib, plugin_test
 
-RAILS_ENV = "test"
-RAILS_ROOT = File.dirname(__FILE__) + "/.." # fake the rails root directory.
-RAILS_DEFAULT_LOGGER = ActiveSupport::BufferedLogger.new(File.dirname(__FILE__) + "/../test.log")
+unless defined?(RAILS_ENV)
+  RAILS_ENV = "test"
+  RAILS_ROOT = File.dirname(__FILE__) + "/.." # fake the rails root directory.
+  RAILS_DEFAULT_LOGGER = ActiveSupport::BufferedLogger.new(File.dirname(__FILE__) + "/../test.log")
+end
 
 require "mocks/spawn"
 require "mocks/logger"

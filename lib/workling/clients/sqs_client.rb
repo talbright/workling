@@ -28,13 +28,15 @@ module Workling
   module Clients
     class SqsClient < Workling::Clients::Base
 
-      AWS_MAX_QUEUE_NAME = 80
+      unless defined?(AWS_MAX_QUEUE_NAME)
+        AWS_MAX_QUEUE_NAME = 80
 
-      # Note that 10 is the maximum number of messages that can be retrieved
-      # in a single request.
-      DEFAULT_MESSAGES_PER_REQ = 10
-      DEFAULT_VISIBILITY_TIMEOUT = 30
-      DEFAULT_VISIBILITY_RESERVE = 10
+        # Note that 10 is the maximum number of messages that can be retrieved
+        # in a single request.
+        DEFAULT_MESSAGES_PER_REQ = 10
+        DEFAULT_VISIBILITY_TIMEOUT = 30
+        DEFAULT_VISIBILITY_RESERVE = 10
+      end
       
       # Mainly exposed for testing purposes
       attr_reader :sqs_options
