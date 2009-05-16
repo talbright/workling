@@ -1,8 +1,12 @@
 #
 #  I can haz am in your Workling are belong to us! 
 #
-require 'mattr_accessor' unless Module.respond_to?(:mattr_accessor)
-require 'cattr_accessor' unless Class.respond_to?(:cattr_accessor)
+def require_in_tree(name)
+  require File.join(File.dirname(__FILE__), name)
+end
+
+require_in_tree 'extensions/mattr_accessor' unless Module.respond_to?(:mattr_accessor)
+require_in_tree 'extensions/cattr_accessor' unless Class.respond_to?(:cattr_accessor)
 
 gem 'activesupport'
 require 'active_support/inflector'
@@ -131,10 +135,6 @@ module Workling
       raise Workling::WorklingNotFoundError.new("could not find #{ clazz }:#{ method } workling. ") 
     end
 
-end
-
-def require_in_tree(name)
-  require File.join(File.dirname(__FILE__), name)
 end
 
 require_in_tree "workling/discovery"
