@@ -103,7 +103,7 @@ module Workling
 
     return nil unless File.exists?(config_path)
 
-    @@config ||= YAML.load_file(config_path)[RAILS_ENV || 'development'].symbolize_keys
+    @@config ||= YAML.load_file(config_path)[env || 'development'].symbolize_keys
     @@config[:memcache_options].symbolize_keys! if @@config[:memcache_options]
     @@config
   end
@@ -118,27 +118,35 @@ module Workling
   #  Raises exceptions thrown inside of the worker. normally, these are logged to 
   #  logger.error. it's easy to miss these log calls while developing, though. 
   #
-  mattr_accessor :raise_exceptions
-  @@raise_exceptions = (RAILS_ENV == "test" || RAILS_ENV == "development")
-  
+  mattr_writer :raise_exceptions
+  def raise_exceptions
+    return @@raise_exceptions if defined?(@@raise_exceptions)
+    @@raise_exceptions = (RAILS_ENV == "test" || RAILS_ENV == "development")
+  end
+
   def self.raise_exceptions?
     @@raise_exceptions
   end
-  
+
   private
     def self.raise_not_found(clazz, method)
       raise Workling::WorklingNotFoundError.new("could not find #{ clazz }:#{ method } workling. ") 
     end
+
 end
 
-require "workling/discovery"
-require "workling/base"
-require "workling/remote"
+def require_in_tree(name)
+  require File.join(File.dirname(__FILE__), name)
+end
+
+require_in_tree "workling/discovery"
+require_in_tree "workling/base"
+require_in_tree "workling/remote"
 
 # load all possible extension classes
 ["clients", "remote/invokers", "remote/runners", "return/store", "routing"].each do |e_dirs|
   # first the base
-  require "workling/#{e_dirs}/base"
+  require_in_tree "workling/#{e_dirs}/base"
 
   # now the implemenations
   Dir.glob(File.join(File.dirname(__FILE__), "workling", e_dirs, "*.rb")).each do |rb_file|

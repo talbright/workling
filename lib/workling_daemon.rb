@@ -44,6 +44,7 @@ class WorklingDaemon
       opts.on('-i', '--invoker INVOKER', String, "specify the invoker class") { |v| options[:invoker_class] = v }
       opts.on('-r', '--routing ROUTING', String, "specify the routing class") { |v| options[:routing_class] = v }
       opts.on('-l', '--load-path LOADPATH', String, "specify the load_path for the workers") { |v| options[:load_path] = v }
+      opts.on('-f', '--config-path CONFIGPATH', String, "specify the path to the workling.yml file") { |v| options[:config_path] = v }
       opts.on('-e', '--environment ENVIRONMENT', String, "specify the environment") { |v| options[:rails_env] = v }
     end
     opts.parse!(partition_options(args).last)
@@ -52,7 +53,7 @@ class WorklingDaemon
 
 
   def self.build_poller(options)
-    require 'workling/remote'
+    require File.join(File.dirname(__FILE__), 'workling/remote')
     ["remote/invokers/*.rb", "routing/*.rb"].each do |pattern|
       Dir.glob(pattern).each do |f|
         require File.join(File.dirname(f), File.basename(f, ".rb"))
@@ -67,13 +68,17 @@ class WorklingDaemon
 
 
   def self.run(options)
-    unless options[:no_rails]
+    if options[:no_rails]
+      # if rails is not booted we need to pull in the workling requires manually
+      require File.join(File.dirname(__FILE__), "workling")
+    else
       ENV["RAILS_ENV"] = options[:rails_env]
       puts "=> Loading Rails with #{ENV["RAILS_ENV"]} environment..."
       require options[:rails_root] + '/config/environment'
     end
 
     Workling.load_path = options[:load_path]
+    Workling.config_path = options[:config_path]
 
     Workling::Discovery.discover!
     Workling.config
@@ -94,8 +99,9 @@ class WorklingDaemon
     begin
       poller.listen
     ensure
-      puts '** No Worklings found.' if Workling::Discovery.discovered.blank?
+      puts '** No Worklings found.' if Workling::Discovery.discovered.empty?
       puts '** Exiting'
     end
   end
+
 end

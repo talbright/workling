@@ -28,10 +28,13 @@ module Workling
           Object.const_defined? "Spawn"
         end
 
-        cattr_accessor :options
+        cattr_writer :options
+        def options
+          return @@options if defined?(@@options)
+          # use thread for development and test modes. easier to hunt down exceptions that way.
+          @@options = { :method => (RAILS_ENV == "test" || RAILS_ENV == "development" ? :fork : :thread) }
+        end
 
-        # use thread for development and test modes. easier to hunt down exceptions that way. 
-        @@options = { :method => (RAILS_ENV == "test" || RAILS_ENV == "development" ? :fork : :thread) }
         include Spawn if installed?
 
         # dispatches to Spawn, using the :fork option. 

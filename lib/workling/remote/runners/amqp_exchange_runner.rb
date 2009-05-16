@@ -18,27 +18,32 @@ module Workling
   module Remote
     module Runners
       class AmqpExchangeRunner < Workling::Remote::Runners::Base
-        
+
         # Routing class. Workling::Routing::ClassAndMethodRouting.new by default. 
-        cattr_accessor :routing
-        @@routing ||= Workling::Routing::ClassAndMethodRouting.new
-        
+        cattr_writer :routing
+        def self.routing
+          @@routing ||= Workling::Routing::ClassAndMethodRouting.new
+        end
+
         # The workling Client class. Workling::Clients::MemcacheQueueClient.new by default. 
-        cattr_accessor :client
-        @@client ||= Workling::Clients::AmqpExchangeClient.new
-        
+        cattr_writer :client
+        def self.client
+          @@client ||= Workling::Clients::AmqpExchangeClient.new
+        end
+
         # enqueues the job onto the client
         def run(clazz, method, options = {})
-          
+
           # neet to connect in here as opposed to the constructor, since the EM loop is
           # not available there. 
           @connected ||= self.class.client.connect
 
           # NOTE - currently hardcoded to use the default exchange
           self.class.client.request("amq.topic", options)    
-          
+
           return nil
         end
+
       end
     end
   end

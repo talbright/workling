@@ -19,6 +19,7 @@ workling_options = {
   :routing_class => "Workling::Routing::ClassAndMethodRouting",
   :rails_root => Dir.pwd,
   :load_path => ['app/workers/**/*.rb'],
+  :config_path => "config/workling.yml",
   :rails_env => (ENV['RAILS_ENV'] || "development").dup,
   :no_rails => false
 }.merge(WorklingDaemon.parse_workling_options(ARGV))

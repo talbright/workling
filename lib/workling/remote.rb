@@ -1,9 +1,3 @@
-require "workling/remote/runners/not_remote_runner"
-require "workling/remote/runners/spawn_runner"
-require "workling/remote/runners/starling_runner"
-require "workling/remote/runners/backgroundjob_runner"
-require "workling/remote/invokers/threaded_poller"
-
 require 'digest/md5'
 
 #
@@ -38,11 +32,17 @@ module Workling
     mattr_accessor :dispatcher
 
     # set the desired invoker. this class grabs work from the job broker and executes it.
-    mattr_accessor :invoker
-    @@invoker ||= self.select_invoker
+    mattr_writer :invoker
+    def self.invoker
+      return @@invoker if defined?(@@invoker)
+      @@invoker = select_invoker
+    end
 
-    mattr_accessor :routing
-    @@routing ||= Workling::Routing::ClassAndMethodRouting
+    mattr_writer :routing
+    def self.routing
+      return @@routing if defined?(@@routing)
+      @@routing = Workling::Routing::ClassAndMethodRouting
+    end
 
     # retrieve the dispatcher or instantiate it using the defaults
     def self.dispatcher
