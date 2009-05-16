@@ -7,7 +7,7 @@ module Workling
   module Remote
     module Invokers
       class BasicPoller < Workling::Remote::Invokers::Base
-        
+
         #
         #  set up client, sleep time
         #
