@@ -20,6 +20,10 @@ module Workling
       @@logger ||= defined?(RAILS_DEFAULT_LOGGER) ? ::RAILS_DEFAULT_LOGGER : Logger.new($stdout)
     end
 
+    def logger
+      self.class.logger
+    end
+
     cattr_accessor :exposed_methods
     @@exposed_methods ||= {}
 
@@ -102,8 +106,5 @@ module Workling
       end
     end
 
-    def logger
-      self.class.logger
-    end
   end
 end
