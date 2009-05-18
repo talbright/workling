@@ -2,7 +2,7 @@ require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/../../lib/workling_daemon'
 
 class MyClient < Workling::Clients::Base; end;
-class MyInvoker < Workling::Remote::Invokers::Base
+class MyInvoker < Workling::Invokers::Base
   attr_reader :router, :client_class
   def initialize(router, client_class)
     @router = router

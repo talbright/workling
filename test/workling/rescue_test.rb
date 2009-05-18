@@ -2,11 +2,11 @@ require File.dirname(__FILE__) + '/../test_helper'
 
 context "Exceptions raised by worker" do
   before do    
-    @old_dispatcher = Workling::Remote.dispatcher
-    Workling::Remote.dispatcher = Workling::Remote::Runners::NotRemoteRunner.new
+    @old_dispatcher = Workling::Remote.client
+    Workling::Remote.client = Workling::Clients::NotRemoteClient.new
   end
   after do
-    Workling::Remote.dispatcher = @old_dispatcher # set back to whence we came
+    Workling::Remote.client = @old_dispatcher # set back to whence we came
   end
   
   specify "should not escape dispatcher" do

@@ -3,7 +3,7 @@
 #
 module Workling
   module Clients
-    class AmqpExchangeClient < Workling::Clients::Base
+    class AmqpExchangeClient < Workling::Clients::BrokerBase
 
       def self.load
         begin
@@ -45,6 +45,8 @@ module Workling
       # publish message to exchange
       # using the specified routing key
       def request(exchange_name, value)
+        exchange_name = "amq.topic"
+
         key = value.delete(:routing_key)
         msg = YAML.dump(value)
         exchange = @amq.topic(exchange_name)

@@ -6,7 +6,7 @@ context "the invoker 'eventmachine subscription'" do
     @client_class = Workling::Clients::MemoryQueueClient
     @client = @client_class.new
     @client.connect
-    @invoker = Workling::Remote::Invokers::EventmachineSubscriber.new(routing, @client_class)
+    @invoker = Workling::Invokers::EventmachineSubscriber.new(routing, @client_class)
   end
   
   specify "should invoke Util.echo with the arg 'hello' if the string 'hello' is set onto the queue utils__echo" do

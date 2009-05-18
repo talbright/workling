@@ -5,7 +5,7 @@ context "the invoker 'threaded poller'" do
     routing = Workling::Routing::ClassAndMethodRouting.new
     @client = Workling::Clients::MemoryQueueClient.new
     @client.connect
-    @invoker = Workling::Remote::Invokers::ThreadedPoller.new(routing, @client.class)
+    @invoker = Workling::Invokers::ThreadedPoller.new(routing, @client.class)
   end
   
   specify "should invoke Util.echo with the arg 'hello' if the string 'hello' is set onto the queue utils__echo" do

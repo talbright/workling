@@ -61,16 +61,8 @@ class IntegrationSetup
     end
 
     def setup_environment
-      if @options[:config]
-        Workling.config = @options[:config].call
-      end
-
-      if @options[:dispatcher]
-        Workling::Remote.dispatcher = @options[:dispatcher].new
-      else
-        Workling::Remote.dispatcher = Workling::Remote::Runners::ClientRunner.new
-        Workling::Remote.dispatcher.client = @options[:client].new
-      end
+      Workling.config = @options[:config].call if @options[:config]
+      Workling::Remote.client = @options[:client].new
     end
 
     def start_daemon

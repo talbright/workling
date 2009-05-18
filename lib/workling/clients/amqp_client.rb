@@ -3,7 +3,7 @@
 #
 module Workling
   module Clients
-    class AmqpClient < Workling::Clients::Base
+    class AmqpClient < Workling::Clients::BrokerBase
 
       def self.load
         begin

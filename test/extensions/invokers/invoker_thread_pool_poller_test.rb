@@ -5,7 +5,7 @@ context "the invoker 'thread pool poller'" do
     @routing = Workling::Routing::ClassAndMethodRouting.new
     @client = Workling::Clients::MemoryQueueClient.new
     @client.connect
-    @invoker = Workling::Remote::Invokers::ThreadPoolPoller.new(@routing, @client.class)
+    @invoker = Workling::Invokers::ThreadPoolPoller.new(@routing, @client.class)
   end
 
   specify "should have default values for various settings" do
@@ -19,7 +19,7 @@ context "the invoker 'thread pool poller'" do
       :sleep_time => 10, :reset_time => '45', :pool_size  => '50'
     )
 
-    @invoker = Workling::Remote::Invokers::ThreadPoolPoller.new(@routing, @client.class)
+    @invoker = Workling::Invokers::ThreadPoolPoller.new(@routing, @client.class)
 
     @invoker.sleep_time.should.equal 10.0
     @invoker.reset_time.should.equal 45.0

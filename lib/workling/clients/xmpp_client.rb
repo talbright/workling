@@ -40,7 +40,7 @@
 
 module Workling
   module Clients
-    class XmppClient < Workling::Clients::Base
+    class XmppClient < Workling::Clients::BrokerBase
 
       def self.load
         begin

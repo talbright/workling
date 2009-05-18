@@ -26,7 +26,7 @@ require 'right_aws'
 #   
 module Workling
   module Clients
-    class SqsClient < Workling::Clients::Base
+    class SqsClient < Workling::Clients::BrokerBase
 
       unless defined?(AWS_MAX_QUEUE_NAME)
         AWS_MAX_QUEUE_NAME = 80

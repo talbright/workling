@@ -1,9 +1,9 @@
 $setup_loader.register("spawn") do |s|
 
-  s.dispatcher Workling::Remote::Runners::SpawnRunner
+  s.client Workling::Clients::SpawnClient
 
   s.guard do
-    Workling::Remote::Runners::SpawnRunner.installed?
+    Workling::Clients::SpawnClient.installed?
   end
 
 end

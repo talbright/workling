@@ -9,7 +9,7 @@
 #
 module Workling
   module Clients
-    class MemcacheQueueClient < Workling::Clients::Base
+    class MemcacheQueueClient < Workling::Clients::BrokerBase
 
       def self.installed?
         begin
@@ -97,6 +97,7 @@ module Workling
             raise Workling::WorklingConnectionError.new("#{e.class.to_s} - #{e.message}")        
           end
         end
+
     end
   end
 end

@@ -5,7 +5,7 @@ context "the invoker 'basic poller'" do
     routing = Workling::Routing::ClassAndMethodRouting.new
     @client = Workling::Clients::MemoryQueueClient.new
     @client.connect
-    @invoker = Workling::Remote::Invokers::BasicPoller.new(routing, @client.class)
+    @invoker = Workling::Invokers::BasicPoller.new(routing, @client.class)
   end
   
   specify "should not explode when listen is called, and stop nicely when stop is called. " do

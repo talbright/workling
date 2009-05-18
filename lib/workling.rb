@@ -58,22 +58,66 @@ module Workling
   VERSION = "0.4.9" unless defined?(VERSION)
 
   #
-  # determine the runner to use if nothing is specifically set. workling will try to detect
+  # determine the client to use if nothing is specifically set. workling will try to detect
   # starling, spawn, or bj, in that order. if none of these are found, notremoterunner will
   # be used. 
   #
-  # this can be overridden by setting Workling::Remote.dispatcher, eg:
-  #   Workling::Remote.dispatcher = Workling::Remote::Runners::StarlingRunner.new
-  #
-  def self.default_runner
+  def self.select_and_build_default_client
     if env == "test"
-      Workling::Remote::Runners::NotRemoteRunner.new
-    elsif Workling::Remote::Runners::SpawnRunner.installed?
-      Workling::Remote::Runners::SpawnRunner.new
-    elsif Workling::Remote::Runners::BackgroundjobRunner.installed?
-      Workling::Remote::Runners::BackgroundjobRunner.new
+      Workling::Clients::NotRemoteClient.new
+    elsif Workling::Clients::SpawnClient.installed?
+      Workling::Clients::SpawnClient.new
+    elsif Workling::Clients::BackgroundjobClient.installed?
+      Workling::Clients::BackgroundjobClient.new
     else
-      Workling::Remote::Runners::NotRemoteRunner.new
+      Workling::Clients::NotRemoteClient.new
+    end
+  end
+
+  #
+  # this will build the client to use for job dispatching and retrieval
+  # The look up does the following:
+  #    1. if Workling::Remote.client is set explicitly then that client is used
+  #    2. if workling.yml (or whatever file is used) contains a client section then that is used
+  #    3. otherwise the default client is built using the Workling.select_and_build_default_client method
+  #
+  def self.select_and_build_client
+    case(Workling.config[:client])
+    when 'amqp'
+      Workling::Clients::AmqpClient
+
+    when 'amqp_exchange'
+      Workling::Clients::AmqpExchangeClient
+
+    when 'memcache', 'starling'
+      Workling::Clients::MemcacheQueueClient
+
+    when 'memory_queue'   # this one is pretty useles...
+      Workling::Clients::MemoryQueueClient
+
+    when 'sqs'
+      Workling::Clients::SqsClient
+
+    when 'xmpp'
+      Workling::Clients::XmppClient
+
+    when 'backgroundjob'
+      Workling::Clients::BackgroundjobClient
+
+    when 'not_remote'
+      Workling::Clients::NotRemoteClient
+
+    when 'not'
+      Workling::Clients::NotClient
+
+    when 'spawn'
+      Workling::Clients::SpawnClient
+
+    when 'thread'
+      Workling::Clients::ThreadClient
+
+    else
+      select_and_build_default_client
     end
   end
 
@@ -141,12 +185,14 @@ require_in_tree "workling/discovery"
 require_in_tree "workling/base"
 require_in_tree "workling/remote"
 
-# load all possible extension classes
-["clients", "remote/invokers", "remote/runners", "return/store", "routing"].each do |e_dirs|
-  # first the base
-  require_in_tree "workling/#{e_dirs}/base"
+require_in_tree "workling/clients/base"
+require_in_tree "workling/clients/broker_base"
+require_in_tree "workling/invokers/base"
+require_in_tree "workling/return/store/base"
+require_in_tree "workling/routing/base"
 
-  # now the implemenations
+# load all possible extension classes
+["clients", "invokers", "return/store", "routing"].each do |e_dirs|
   Dir.glob(File.join(File.dirname(__FILE__), "workling", e_dirs, "*.rb")).each do |rb_file|
     require File.join(File.dirname(rb_file), File.basename(rb_file, ".rb"))
   end

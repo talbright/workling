@@ -6,49 +6,18 @@ require 'digest/md5'
 module Workling
   module Remote
 
-    # Select which invoke to load based on what is defined in workling.yml. Defaults to thread_poller
-    # if none are specified.
-    def self.select_invoker
-      case(Workling.config[:invoker])
-      when 'basic_poller'
-        Workling::Remote::Invokers::BasicPoller
-
-      when 'thread_pool_poller'
-        Workling::Remote::Invokers::ThreadPoolPoller
-
-      when 'eventmachine_subscriber'
-        Workling::Remote::Invokers::EventmachineSubscriber
-
-      when 'threaded_poller', nil
-        Workling::Remote::Invokers::ThreadedPoller
-
-      else
-        Workling.logger.error("Nothing is known about #{Workling.config[:invoker]} defaulting to thread_poller")
-        Workling::Remote::Invokers::ThreadedPoller
-      end
-    end
-
-    # set the desired runner here. this is initialized with Workling.default_runner. 
-    mattr_accessor :dispatcher
-
-    # set the desired invoker. this class grabs work from the job broker and executes it.
-    mattr_writer :invoker
-    def self.invoker
-      return @@invoker if defined?(@@invoker)
-      @@invoker = select_invoker
-    end
-
+    # which object to use for routing
     mattr_writer :routing
     def self.routing
-      return @@routing if defined?(@@routing)
-      @@routing = Workling::Routing::ClassAndMethodRouting
+      @@routing ||= Workling::Routing::ClassAndMethodRouting.new
     end
 
-    # retrieve the dispatcher or instantiate it using the defaults
-    def self.dispatcher
-      @@dispatcher ||= Workling.default_runner
+    # which client to use for dispatching
+    mattr_accessor :client
+    def self.client
+      @@client ||= Workling.select_and_build_client
     end
-    
+
     # generates a unique identifier for this particular job. 
     def self.generate_uid(clazz, method)
       uid = ::Digest::MD5.hexdigest("#{ clazz }:#{ method }:#{ rand(1 << 64) }:#{ Time.now }")
@@ -61,7 +30,7 @@ module Workling
       uid = Workling::Remote.generate_uid(clazz, method)
       options[:uid] = uid if options.kind_of?(Hash) && !options[:uid]
       Workling.find(clazz, method) # this line raises a WorklingError if the method does not exist. 
-      dispatcher.run(clazz, method, options)
+      client.dispatch(clazz, method, options)
       uid
     end
 
