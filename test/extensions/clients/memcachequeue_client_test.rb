@@ -1,7 +1,6 @@
 require File.dirname(__FILE__) + '/../../test_helper'
 
 context "The memcachequeue client" do
-
   setup do
     Workling::Clients::MemcacheQueueClient.load
   end
@@ -39,5 +38,5 @@ context "The memcachequeue client" do
     client.connect
 
     client.queueserver_urls.should.equal ["localhost:12345"]
-  end  
+  end
 end
