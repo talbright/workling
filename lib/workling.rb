@@ -116,6 +116,9 @@ module Workling
     when 'thread'
       Workling::Clients::ThreadClient
 
+    when 'rudeq'
+      Workling::Clients::RudeQClient
+
     else
       select_and_build_default_client
     end
