@@ -26,16 +26,15 @@ module Workling
       end
 
       cattr_writer :options
-      def options
-        return @@options if defined?(@@options)
+      def self.options
         # use thread for development and test modes. easier to hunt down exceptions that way.
-        @@options = { :method => (RAILS_ENV == "test" || RAILS_ENV == "development" ? :fork : :thread) }
+        @@options ||= { :method => (RAILS_ENV == "test" || RAILS_ENV == "development" ? :fork : :thread) }
       end
 
       include Spawn if installed?
 
       def dispatch(clazz, method, options = {})
-        spawn(SpawnRunner.options) do # exceptions are trapped in here. 
+        spawn(SpawnClient.options) do # exceptions are trapped in here. 
           Workling.find(clazz, method).dispatch_to_worker_method(method, options)
         end
 
