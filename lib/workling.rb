@@ -84,40 +84,40 @@ module Workling
   def self.select_and_build_client
     case(Workling.config[:client])
     when 'amqp'
-      Workling::Clients::AmqpClient
+      Workling::Clients::AmqpClient.new
 
     when 'amqp_exchange'
-      Workling::Clients::AmqpExchangeClient
+      Workling::Clients::AmqpExchangeClient.new
 
     when 'memcache', 'starling'
-      Workling::Clients::MemcacheQueueClient
+      Workling::Clients::MemcacheQueueClient.new
 
     when 'memory_queue'   # this one is pretty useles...
-      Workling::Clients::MemoryQueueClient
+      Workling::Clients::MemoryQueueClient.new
 
     when 'sqs'
-      Workling::Clients::SqsClient
+      Workling::Clients::SqsClient.new
 
     when 'xmpp'
-      Workling::Clients::XmppClient
+      Workling::Clients::XmppClient.new
 
     when 'backgroundjob'
-      Workling::Clients::BackgroundjobClient
+      Workling::Clients::BackgroundjobClient.new
 
     when 'not_remote'
-      Workling::Clients::NotRemoteClient
+      Workling::Clients::NotRemoteClient.new
 
     when 'not'
-      Workling::Clients::NotClient
+      Workling::Clients::NotClient.new
 
     when 'spawn'
-      Workling::Clients::SpawnClient
+      Workling::Clients::SpawnClient.new
 
     when 'thread'
-      Workling::Clients::ThreadClient
+      Workling::Clients::ThreadClient.new
 
     when 'rudeq'
-      Workling::Clients::RudeQClient
+      Workling::Clients::RudeQClient.new
 
     else
       select_and_build_default_client
