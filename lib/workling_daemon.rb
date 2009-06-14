@@ -46,6 +46,7 @@ class WorklingDaemon
       opts.on('-l', '--load-path LOADPATH', String, "specify the load_path for the workers") { |v| options[:load_path] = v }
       opts.on('-f', '--config-path CONFIGPATH', String, "specify the path to the workling.yml file") { |v| options[:config_path] = v }
       opts.on('-e', '--environment ENVIRONMENT', String, "specify the environment") { |v| options[:rails_env] = v }
+      opts.on('-p', '--prefix PREFIX', String, "specify the prefix for queues") { |v| options[:prefix] = v }
     end
     opts.parse!(partition_options(args).last)
     options

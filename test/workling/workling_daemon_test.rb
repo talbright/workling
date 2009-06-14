@@ -57,6 +57,14 @@ context "parsing daemon options" do
 end
 
 context "parsing workling options" do
+  specify "should parse the -p option" do
+    WorklingDaemon.parse_workling_options(["--", "-p", "myapp"]).should == {:prefix => "myapp"}
+  end
+
+  specify "should parse the --prefix option" do
+    WorklingDaemon.parse_workling_options(["--", "--prefix=myapp"]).should == {:prefix => "myapp"}
+  end
+
   specify "should parse the -c option" do
     WorklingDaemon.parse_workling_options(["--", "-c", "memcache"]).should == {:client => "memcache"}
   end
