@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
              "lib/workling/clients/memory_queue_client.rb",
              "lib/workling/clients/not_client.rb",
              "lib/workling/clients/not_remote_client.rb",
+             "lib/workling/clients/rude_q_client.rb",
              "lib/workling/clients/spawn_client.rb",
              "lib/workling/clients/sqs_client.rb",
              "lib/workling/clients/thread_client.rb",
