@@ -14,12 +14,11 @@ daemon_options = {
 }.merge(WorklingDaemon.parse_daemon_options(ARGV))
 
 workling_options = {
-  :client_class => "Workling::Clients::MemcacheQueueClient",
-  :invoker_class => "Workling::Remote::Invokers::ThreadedPoller",
-  :routing_class => "Workling::Routing::ClassAndMethodRouting",
+  :client_class => "memcache_queue",
+  :invoker_class => "threaded_poller",
+  :routing_class => "class_and_method",
   :rails_root => Dir.pwd,
   :load_path => ['app/workers/**/*.rb'],
-  :config_path => "config/workling.yml",
   :rails_env => (ENV['RAILS_ENV'] || "development").dup,
   :no_rails => false
 }.merge(WorklingDaemon.parse_workling_options(ARGV))

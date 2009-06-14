@@ -62,7 +62,7 @@ class IntegrationSetup
 
     def setup_environment
       Workling.config = @options[:config].call if @options[:config]
-      Workling::Remote.client = @options[:client].new
+      Workling::Remote.client = Workling.clients[@options[:client].to_s].new
     end
 
     def start_daemon

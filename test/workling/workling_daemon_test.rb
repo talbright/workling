@@ -1,15 +1,6 @@
 require File.dirname(__FILE__) + '/../test_helper'
 require File.dirname(__FILE__) + '/../../lib/workling_daemon'
 
-class MyClient < Workling::Clients::Base; end;
-class MyInvoker < Workling::Invokers::Base
-  attr_reader :router, :client_class
-  def initialize(router, client_class)
-    @router = router
-    @client_class = client_class
-  end
-end
-class MyRouting < Workling::Routing::Base; end;
 
 context "splitting between daemon and workling options" do
   specify "it should split the args array at the separator" do
@@ -67,29 +58,29 @@ end
 
 context "parsing workling options" do
   specify "should parse the -c option" do
-    WorklingDaemon.parse_workling_options(["--", "-c", "Workling::Clients::MemcacheQueueClient"]).should == {:client_class => "Workling::Clients::MemcacheQueueClient"}
+    WorklingDaemon.parse_workling_options(["--", "-c", "memcache"]).should == {:client => "memcache"}
   end
 
   specify "should parse the --client option" do
-    WorklingDaemon.parse_workling_options(["--", "--client=Workling::Clients::MemcacheQueueClient"]).should == {:client_class => "Workling::Clients::MemcacheQueueClient"}
+    WorklingDaemon.parse_workling_options(["--", "--client=memcache"]).should == {:client => "memcache"}
   end
 
 
   specify "should parse the -i option" do
-    WorklingDaemon.parse_workling_options(["--", "-i", "Workling::Remote::Invokers::LoopedSubscriber"]).should == {:invoker_class => "Workling::Remote::Invokers::LoopedSubscriber"}
+    WorklingDaemon.parse_workling_options(["--", "-i", "looped"]).should == {:invoker => "looped"}
   end
 
   specify "should parse the --invoker option" do
-    WorklingDaemon.parse_workling_options(["--", "--invoker=Workling::Remote::Invokers::LoopedSubscriber"]).should == {:invoker_class => "Workling::Remote::Invokers::LoopedSubscriber"}
+    WorklingDaemon.parse_workling_options(["--", "--invoker=looped"]).should == {:invoker => "looped"}
   end
 
 
   specify "should parse the -r option" do
-    WorklingDaemon.parse_workling_options(["--", "-r", "Workling::Routing::ClassAndMethodRouting"]).should == {:routing_class => "Workling::Routing::ClassAndMethodRouting"}
+    WorklingDaemon.parse_workling_options(["--", "-r", "class_and_method"]).should == {:routing => "class_and_method"}
   end
 
   specify "should parse the --routing option" do
-    WorklingDaemon.parse_workling_options(["--", "--routing=Workling::Routing::ClassAndMethodRouting"]).should == {:routing_class => "Workling::Routing::ClassAndMethodRouting"}
+    WorklingDaemon.parse_workling_options(["--", "--routing=class_and_method"]).should == {:routing => "class_and_method"}
   end
 
 
@@ -116,17 +107,36 @@ context "parsing workling options" do
   end
 end
 
-context "building poller" do
-  specify "should extract the relevant classes and objects" do
-    options = {
-      :client_class => "MyClient",
-      :invoker_class => "MyInvoker",
-      :routing_class => "MyRouting",
-      :workling_root => "."
-    }
-    poller = WorklingDaemon.build_poller(options)
-    poller.should.be.a.kind_of MyInvoker
-    poller.router.should.be.a.kind_of MyRouting
-    poller.client_class.should == MyClient
+context "configuring daemon" do
+  context "load path setting" do
+    specify "it should overwrite default load path if given on the command line" do
+      WorklingDaemon.initialize_workling :load_path => "/some/where/else"
+      Workling.load_path.should == "/some/where/else"
+    end
+
+    specify "it not overwrite default load path it is not given" do
+      load_path = Workling.load_path
+      WorklingDaemon.initialize_workling({})
+      Workling.load_path.should == load_path
+    end
+  end
+
+  specify "it should discover worklings" do
+    Workling::Discovery.expects(:discover!).once
+    WorklingDaemon.initialize_workling({})
+  end
+
+  context "loading config" do
+    specify "it should load config file if config_path is given" do
+      WorklingDaemon.initialize_workling :config_path => "/this/is/my/config_file"
+      
+    end
+
+    specify "it should take config from command line if config_path is not given" do
+      WorklingDaemon.initialize_workling :client => "sqs", :invoker => "basic_poller", :routing => "class_and_method"
+      Workling.config[:client].should == "sqs"
+      Workling.config[:invoker].should == "basic_poller"
+      Workling.config[:routing].should == "class_and_method"
+    end
   end
 end

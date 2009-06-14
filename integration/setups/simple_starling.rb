@@ -1,8 +1,8 @@
 $setup_loader.register("simple starling") do |s|
 
   s.run_daemon
-  s.client Workling::Clients::MemcacheQueueClient
-  s.invoker Workling::Invokers::BasicPoller
+  s.client :starling
+  s.invoker :basic_poller
 
   s.config do
     { :listens_on => "localhost:22122" }

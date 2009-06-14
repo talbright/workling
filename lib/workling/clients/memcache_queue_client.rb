@@ -44,7 +44,8 @@ module Workling
       #  to queueserver.
       #
       def connect
-        @queueserver_urls = Workling.config[:listens_on].split(',').map { |url| url ? url.strip : url }
+        listens_on = Workling.config[:listens_on] || "localhost:22122"
+        @queueserver_urls = listens_on.split(',').map { |url| url ? url.strip : url }
         options = [@queueserver_urls, Workling.config[:memcache_options]].compact
         self.connection = ::MemCache.new(*options)
 

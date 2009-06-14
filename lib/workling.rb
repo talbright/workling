@@ -27,7 +27,6 @@ module Workling
       super "config/workling.yml configured to connect to queue server on #{ Workling.config[:listens_on] } for this environment. could not connect to queue server on this host:port. for starling users: pass starling the port with -p flag when starting it. If you don't want to use Starling, then explicitly set Workling::Remote.dispatcher (see README for an example)"
     end
   end
-
   class ConfigurationError < WorklingError
     def initialize
       super File.exist?(Workling.path('config', 'starling.yml')) ? 
@@ -35,7 +34,7 @@ module Workling
         "config/workling.yml could not be loaded. check out README.markdown to see what this file should contain. "
     end
   end
-  
+
   def self.path(*args)
     if defined?(RAILS_ROOT)
       File.join(RAILS_ROOT, *args)
@@ -62,16 +61,40 @@ module Workling
   # starling, spawn, or bj, in that order. if none of these are found, notremoterunner will
   # be used. 
   #
-  def self.select_and_build_default_client
+  def self.select_default_client
     if env == "test"
-      Workling::Clients::NotRemoteClient.new
+      Workling::Clients::NotRemoteClient
     elsif Workling::Clients::SpawnClient.installed?
-      Workling::Clients::SpawnClient.new
+      Workling::Clients::SpawnClient
     elsif Workling::Clients::BackgroundjobClient.installed?
-      Workling::Clients::BackgroundjobClient.new
+      Workling::Clients::BackgroundjobClient
     else
-      Workling::Clients::NotRemoteClient.new
+      Workling::Clients::NotRemoteClient
     end
+  end
+
+  def self.clients
+    {
+      'amqp' => Workling::Clients::AmqpClient,
+      'amqp_exchange' => Workling::Clients::AmqpExchangeClient,
+      'memcache' => Workling::Clients::MemcacheQueueClient,
+      'starling' => Workling::Clients::MemcacheQueueClient,
+      'memory_queue' => Workling::Clients::MemoryQueueClient,
+      'sqs' => Workling::Clients::SqsClient,
+      'xmpp' => Workling::Clients::XmppClient,
+      'backgroundjob' => Workling::Clients::BackgroundjobClient,
+      'not_remote' => Workling::Clients::NotRemoteClient,
+      'not' => Workling::Clients::NotClient,
+      'spawn' => Workling::Clients::SpawnClient,
+      'thread' => Workling::Clients::ThreadClient,
+      'rudeq' => Workling::Clients::RudeQClient
+    }
+  end
+
+  def self.select_client
+    client_class = clients[Workling.config[:client]] || select_default_client
+    client_class.load
+    client_class
   end
 
   #
@@ -82,46 +105,34 @@ module Workling
   #    3. otherwise the default client is built using the Workling.select_and_build_default_client method
   #
   def self.select_and_build_client
-    case(Workling.config[:client])
-    when 'amqp'
-      Workling::Clients::AmqpClient.new
+    select_client.new
+  end
 
-    when 'amqp_exchange'
-      Workling::Clients::AmqpExchangeClient.new
+  #
+  # this will select the routing class
+  #
+  def self.select_and_build_routing
+    routing_class = {
+      'class_and_method' => Workling::Routing::ClassAndMethodRouting,
+      'static' => Workling::Routing::StaticRouting
+    }[Workling.config[:routing]] || Workling::Routing::ClassAndMethodRouting
+    routing_class.new
+  end
 
-    when 'memcache', 'starling'
-      Workling::Clients::MemcacheQueueClient.new
+  #
+  # this will build the invoker which will run the daemon
+  #
+  def self.select_and_build_invoker
+    invoker_class = {
+      'basic_poller' => Workling::Invokers::BasicPoller,
+      'thread_pool_poller' => Workling::Invokers::ThreadPoolPoller,
+      'threaded_poller' => Workling::Invokers::ThreadedPoller,
 
-    when 'memory_queue'   # this one is pretty useles...
-      Workling::Clients::MemoryQueueClient.new
-
-    when 'sqs'
-      Workling::Clients::SqsClient.new
-
-    when 'xmpp'
-      Workling::Clients::XmppClient.new
-
-    when 'backgroundjob'
-      Workling::Clients::BackgroundjobClient.new
-
-    when 'not_remote'
-      Workling::Clients::NotRemoteClient.new
-
-    when 'not'
-      Workling::Clients::NotClient.new
-
-    when 'spawn'
-      Workling::Clients::SpawnClient.new
-
-    when 'thread'
-      Workling::Clients::ThreadClient.new
-
-    when 'rudeq'
-      Workling::Clients::RudeQClient.new
-
-    else
-      select_and_build_default_client
-    end
+      'eventmachine_subscriber' => Workling::Invokers::EventmachineSubscriber,
+      'looped_subscriber' => Workling::Invokers::LoopedSubscriber,
+      'amqp_single_subscriber' => Workling::Invokers::AmqpSingleSubscriber,
+    }[Workling.config[:invoker]] || Workling::Invokers::BasicPoller
+    invoker_class.new(select_and_build_routing, select_client)
   end
 
   #

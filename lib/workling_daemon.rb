@@ -40,9 +40,9 @@ class WorklingDaemon
       opts.banner = 'Usage: myapp [options]'
       opts.separator ''
       opts.on('-n', '--no_rails', "do not load Rails") { |v| options[:no_rails] = true }
-      opts.on('-c', '--client CLIENT', String, "specify the client class") { |v| options[:client_class] = v }
-      opts.on('-i', '--invoker INVOKER', String, "specify the invoker class") { |v| options[:invoker_class] = v }
-      opts.on('-r', '--routing ROUTING', String, "specify the routing class") { |v| options[:routing_class] = v }
+      opts.on('-c', '--client CLIENT', String, "specify the client class") { |v| options[:client] = v }
+      opts.on('-i', '--invoker INVOKER', String, "specify the invoker class") { |v| options[:invoker] = v }
+      opts.on('-r', '--routing ROUTING', String, "specify the routing class") { |v| options[:routing] = v }
       opts.on('-l', '--load-path LOADPATH', String, "specify the load_path for the workers") { |v| options[:load_path] = v }
       opts.on('-f', '--config-path CONFIGPATH', String, "specify the path to the workling.yml file") { |v| options[:config_path] = v }
       opts.on('-e', '--environment ENVIRONMENT', String, "specify the environment") { |v| options[:rails_env] = v }
@@ -51,26 +51,29 @@ class WorklingDaemon
     options
   end
 
-
-  def self.build_poller(options)
-    require File.join(File.dirname(__FILE__), 'workling/remote')
-    ["remote/invokers/*.rb", "routing/*.rb"].each do |pattern|
-      Dir.glob(pattern).each do |f|
-        require File.join(File.dirname(f), File.basename(f, ".rb"))
-      end
-    end
-
-    routing_class = Object.module_eval("::#{options[:routing_class]}")
-    client_class = Object.module_eval("::#{options[:client_class]}")
-    invoker_class = Object.module_eval("::#{options[:invoker_class]}")
-
-    client_class.load
-
-    invoker_class.new(routing_class.new, client_class)
+  def self.extract_options(options)
+    result = {}
+    result[:client] = options[:client] if options[:client]
+    result[:routing] = options[:routing] if options[:routing]
+    result[:invoker] = options[:invoker] if options[:invoker]
+    result
   end
 
+  def self.initialize_workling(options)
+    Workling.load_path = options[:load_path] if options[:load_path]
+    Workling::Discovery.discover!
 
-  def self.run(options)
+    if options[:config_path]
+      Workling.config_path = options[:config_path]
+      Workling.config
+    else
+      Workling.config = extract_options options
+    end
+
+    Workling.select_and_build_invoker
+  end
+
+  def self.boot_with(options)
     if options[:no_rails]
       # if rails is not booted we need to pull in the workling requires manually
       require File.join(File.dirname(__FILE__), "workling")
@@ -78,24 +81,21 @@ class WorklingDaemon
       ENV["RAILS_ENV"] = options[:rails_env]
       puts "=> Loading Rails with #{ENV["RAILS_ENV"]} environment..."
       require options[:rails_root] + '/config/environment'
-    end
 
-    Workling.load_path = options[:load_path]
-    Workling.config_path = options[:config_path]
-
-    Workling::Discovery.discover!
-    Workling.config
-
-    poller = build_poller options
-
-    puts '** Rails loaded.'
-    puts "** Starting #{ poller.class }..."
-    puts '** Use CTRL-C to stop.'
-
-    unless options[:no_rails]
       ActiveRecord::Base.logger = Workling::Base.logger
       ActionController::Base.logger = Workling::Base.logger
+
+      puts '** Rails loaded.'
     end
+  end
+
+
+  def self.run(options)
+    boot_with options
+    poller = initialize_workling(options)
+
+    puts "** Starting #{ poller.class }..."
+    puts '** Use CTRL-C to stop.'
 
     trap(:INT) { poller.stop; exit }
 
