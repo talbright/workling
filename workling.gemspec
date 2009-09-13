@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{workling}
-  s.version = "0.4.9.6"
+  s.version = "0.4.9.7"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rany Keddo"]
@@ -25,6 +25,7 @@ Gem::Specification.new do |s|
              "lib/workling/clients/memory_queue_client.rb",
              "lib/workling/clients/not_client.rb",
              "lib/workling/clients/not_remote_client.rb",
+             "lib/workling/clients/rude_q_client.rb",
              "lib/workling/clients/spawn_client.rb",
              "lib/workling/clients/sqs_client.rb",
              "lib/workling/clients/thread_client.rb",
