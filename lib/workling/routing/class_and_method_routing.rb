@@ -41,7 +41,7 @@ module Workling
 
       private
         def build
-          Workling::Discovery.discovered.each do |clazz|
+          Workling::Discovery.discovered_workers.each do |clazz|
             methods = clazz.public_instance_methods(false)
             methods.each do |method|
               next if method == 'create'  # Skip the create method

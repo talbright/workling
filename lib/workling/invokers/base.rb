@@ -93,7 +93,7 @@ module Workling
         #  Returns the complete set of active routes
         #
         def routes
-          @active_routes ||= Workling::Discovery.discovered.map { |clazz| @routing.queue_names_routing_class(clazz) }.flatten
+          Workling::Discovery.discovered_workers.map { |clazz| @routing.queue_names_routing_class(clazz) }.flatten
         end
         
         # Thanks for this Brent! 

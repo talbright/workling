@@ -3,8 +3,12 @@
 #
 module Workling
   class Discovery
-    cattr_accessor :discovered
-    @@discovered ||= []
+    cattr_reader :discovered_workers
+    @@discovered_workers ||= []
+
+    def self.add_worker(klass)
+      @@discovered_workers << klass
+    end
 
     # requires worklings so that they are added to routing.
     def self.discover!

@@ -28,7 +28,7 @@ context "the invoker 'thread pool poller'" do
 
   specify "should work in general" do
     # Assumptions
-    Workling::Discovery.discovered.size.should.not.be 0
+    Workling::Discovery.discovered_workers.size.should.not.be 0
 
     mock_client do |client|
       client.expects(:retrieve).at_least_once.returns(nil)
@@ -83,7 +83,7 @@ context "the invoker 'thread pool poller'" do
     listener = Thread.new { @invoker.listen }
 
     # Wait until the invoker has finished starting
-    while(@invoker.poller_threads != Workling::Discovery.discovered.size)
+    while(@invoker.poller_threads != Workling::Discovery.discovered_workers.size)
       Thread.pass
     end
 
@@ -99,6 +99,6 @@ context "the invoker 'thread pool poller'" do
 
     yield client
 
-    @client.class.expects(:new).times(Workling::Discovery.discovered.size).returns(client)
+    @client.class.expects(:new).times(Workling::Discovery.discovered_workers.size).returns(client)
   end
 end

@@ -55,7 +55,7 @@ module Workling
         logger.info("Starting ThreadPoolPoller...")
     
         # Determine which queues need checking
-        Workling::Discovery.discovered.map do |klass|
+        Workling::Discovery.discovered_workers.map do |klass|
           @pollers.synchronize do
             # Polls the backing queue for jobs to be done
             @pollers << Thread.new do

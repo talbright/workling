@@ -28,7 +28,7 @@ module Workling
     @@exposed_methods ||= {}
 
     def self.inherited(subclass)
-      Workling::Discovery.discovered << subclass
+      Workling::Discovery.add_worker subclass
     end
 
     # expose a method using a custom queue name

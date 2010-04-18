@@ -21,7 +21,7 @@ module Workling
 
       def listen
         # Create a thread for each worker.
-        Workling::Discovery.discovered.each do |clazz|
+        Workling::Discovery.discovered_workers.each do |clazz|
           logger.debug("Discovered listener #{clazz}")
           @workers.add(Thread.new(clazz) { |c| clazz_listen(c) })
         end
@@ -42,7 +42,7 @@ module Workling
       # Check if all Worker threads have been started. 
       def started?
         logger.debug("checking if started... list size is #{ worker_threads }")
-        Workling::Discovery.discovered.size == worker_threads
+        Workling::Discovery.discovered_workers.size == worker_threads
       end
 
       # number of worker threads running
