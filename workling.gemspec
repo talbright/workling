@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{workling}
-  s.version = "0.4.9.7"
+  s.version = "0.4.9.8"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rany Keddo"]
