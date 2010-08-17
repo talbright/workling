@@ -54,8 +54,13 @@ module Workling
 
       # closes the memcache connection
       def close
-        self.connection.flush_all
-        self.connection.reset
+        begin
+          self.connection.flush_all
+        rescue MemCache::MemCacheError => err
+          STDERR.puts "Memcache client doesn't respond to flush all"
+        ensure
+          self.connection.reset
+        end
       end
 
       # implements the client job request and retrieval 
