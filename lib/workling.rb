@@ -76,6 +76,7 @@ module Workling
   def self.clients
     {
       'amqp' => Workling::Clients::AmqpClient,
+      'amqp_bunny' => Workling::Clients::AmqpBunnyClient,
       'amqp_exchange' => Workling::Clients::AmqpExchangeClient,
       'memcache' => Workling::Clients::MemcacheQueueClient,
       'starling' => Workling::Clients::MemcacheQueueClient,
