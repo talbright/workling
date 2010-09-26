@@ -2,7 +2,7 @@
 
 Gem::Specification.new do |s|
   s.name = %q{workling}
-  s.version = "0.4.9.8"
+  s.version = "0.4.9.9"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Rany Keddo"]
@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
              "lib/extensions/mattr_accessor.rb",
              "lib/workling/base.rb",
              "lib/workling/clients/amqp_client.rb",
+             "lib/workling/clients/amqp_bunny_client.rb",
              "lib/workling/clients/amqp_exchange_client.rb",
              "lib/workling/clients/backgroundjob_client.rb",
              "lib/workling/clients/base.rb",
