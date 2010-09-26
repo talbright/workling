@@ -2,6 +2,15 @@ require 'optparse'
 
 class WorklingDaemon
 
+  def self.running_as_daemon?
+    !!@running_as_daemon
+  end
+
+  def self.run_as_daemon!
+    @running_as_daemon = true
+  end
+
+
   def self.partition_options(args)
     daemon = []
     workling = []
@@ -92,6 +101,8 @@ class WorklingDaemon
 
 
   def self.run(options)
+    WorklingDaemon.run_as_daemon!
+
     boot_with options
     poller = initialize_workling(options)
 
