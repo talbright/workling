@@ -1,4 +1,3 @@
-require 'eventmachine'
 
 #
 #  Subscribes the workers to the correct queues. 
@@ -6,6 +5,14 @@ require 'eventmachine'
 module Workling
   module Invokers
     class EventmachineSubscriber < Workling::Invokers::Base
+      
+      def self.load
+        begin
+          require 'eventmachine'
+        rescue Exception => e
+          Workling::Base.logger.info "WORKLING: couldn't find eventmachine. Install: \"gem install eventmachine\". "
+        end
+      end
       
       def initialize(routing, client_class)
         super

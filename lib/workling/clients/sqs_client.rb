@@ -1,6 +1,3 @@
-require 'json'
-require 'right_aws'
-
 #
 #  An SQS client
 #
@@ -28,6 +25,15 @@ module Workling
   module Clients
     class SqsClient < Workling::Clients::BrokerBase
 
+      def self.load
+        begin
+          require 'json'
+          require 'right_aws'
+        rescue Exception => e
+          Workling::Base.logger.info "WORKLING: couldn't find AWS client. Install: \"gem install right_aws\". "
+        end
+      end
+      
       unless defined?(AWS_MAX_QUEUE_NAME)
         AWS_MAX_QUEUE_NAME = 80
 

@@ -1,5 +1,3 @@
-require 'eventmachine'
-
 #
 # TODO - Subscribes a single worker to a single queue 
 # 
@@ -7,6 +5,14 @@ module Workling
   module Invokers
     class AmqpSingleSubscriber < Workling::Invokers::Base
 
+      def self.load
+        begin
+          require 'eventmachine'
+        rescue Exception => e
+          Workling::Base.logger.info "WORKLING: couldn't find eventmachine. Install: \"gem install eventmachine\". "
+        end
+      end
+      
       def initialize(routing, client_class)
         super
       end

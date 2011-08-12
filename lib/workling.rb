@@ -12,9 +12,9 @@ gem 'activesupport'
 require 'active_support/inflector'
 require 'active_support/core_ext/hash/keys'
 
-class Hash #:nodoc:
-  include ActiveSupport::CoreExtensions::Hash::Keys
-end
+# class Hash #:nodoc:
+#   include ActiveSupport::CoreExtensions::Hash::Keys
+# end
 
 require 'yaml'
 
@@ -36,16 +36,16 @@ module Workling
   end
 
   def self.path(*args)
-    if defined?(RAILS_ROOT)
-      File.join(RAILS_ROOT, *args)
+    if defined?(Rails.root)
+      File.join(Rails.root, *args)
     else
       File.join(Dir.pwd, *args)
     end
   end
 
   def self.env
-    @env ||= if defined?(RAILS_ENV)
-               RAILS_ENV.to_s
+    @env ||= if defined?(Rails.env)
+               Rails.env.to_s
              elsif defined?(RACK_ENV)
                RACK_ENV.to_s
              end
@@ -95,6 +95,7 @@ module Workling
   def self.select_client
     client_class = clients[Workling.config[:client]] || select_default_client
     client_class.load
+    Rails.logger.debug { "workling: using client class #{client_class}" }
     client_class
   end
 
@@ -172,7 +173,7 @@ module Workling
   mattr_writer :config_path
   def self.config_path
     return @@config_path if defined?(@@config_path) && @@config_path
-    @@config_path = File.join(RAILS_ROOT, 'config', 'workling.yml')
+    @@config_path = File.join(Rails.root, 'config', 'workling.yml')
   end
 
   #
@@ -182,7 +183,7 @@ module Workling
   mattr_writer :raise_exceptions
   def raise_exceptions
     return @@raise_exceptions if defined?(@@raise_exceptions)
-    @@raise_exceptions = (RAILS_ENV == "test" || RAILS_ENV == "development")
+    @@raise_exceptions = (Rails.env == "test" || Rails.env == "development")
   end
 
   def self.raise_exceptions?

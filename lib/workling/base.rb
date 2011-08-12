@@ -17,7 +17,7 @@ module Workling
 
     cattr_writer :logger
     def self.logger
-      @@logger ||= defined?(RAILS_DEFAULT_LOGGER) ? ::RAILS_DEFAULT_LOGGER : Logger.new($stdout)
+      @@logger ||= defined?(Rails.logger) ? Rails.logger : Logger.new($stdout)
     end
 
     def logger
