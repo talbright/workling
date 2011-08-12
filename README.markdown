@@ -1,3 +1,8 @@
+# *talbright/workling Fork Notes*
+
+* Fixed compatibility to work with Rails 3.1
+* Fixed code so that it will load without needing to install unwanted gems if you aren't going to use them (AWS for example)
+
 # *digitalhobbit/workling Fork Notes*
 
 *This particular Workling fork provides an SQS Client. See instructions below.*
